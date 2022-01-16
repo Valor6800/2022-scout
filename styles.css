@@ -1,0 +1,101 @@
+body, h1, h2, h3, h4, h5, h6, p {
+  font-family: "Open Sans", Arial,sans-serif !important;
+  /**font-size: 14px;
+  line-height: 20.16px;**/
+}
+
+a {
+  text-decoration: none;
+}
+
+.w3-row-padding img {
+  margin-bottom: 12px
+}
+.w3-sidebar {
+  width: 120px;
+  background: #454545;
+}
+
+.viper-grey, .viper-grey:hover {
+  /**background: #000; **/
+  color:#fff!important;
+  background-color:#aaa!important;
+}
+
+.viper-black, .viper-black-no-hover, .viper-black-hover:hover  {
+  /**background: #000; **/
+  color:#fff!important;
+  background-color:#000!important;
+}
+
+.viper-black:hover {
+  color:#fff!important;
+  background-color:#939090!important;
+}
+
+.red, .red-no-hover, .red-hover:hover {
+  /**background: #000; **/
+  color:#fff!important;
+  background-color:#cf364a!important;
+}
+
+.red:hover {
+  /**background: #000; **/
+  color:#fff!important;
+  background-color:#939090!important;
+}
+
+.grey, .grey-no-hover, .grey-hover:hover {
+  color:#fff!important;
+  background: #909393;
+}
+
+#regional_table .table_entry:hover {
+  cursor: pointer;
+  background-color: #ccc!important;
+}
+
+.sortable thead:hover {
+  cursor: pointer;
+}
+
+.w3-table {
+  color: #504f4d;
+}
+
+.stripe {
+  background-color: #f1f1f1 !important;
+}
+
+.hidden {
+  display: none;
+}
+
+#search-box {
+  background-color: #ffffff;
+  color: #504f4d;
+  border-color: #454545;
+}
+
+#main {
+  /** margin-left: 120px **/
+}
+
+.list-icon {
+  padding: 4px 0;
+}
+
+@media only screen and (max-width: 600px) {
+  #main {
+    margin-left: 0
+  }
+}
+input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}

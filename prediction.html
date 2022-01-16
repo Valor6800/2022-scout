@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ViperScout</title>
+
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600italic,600,700italic,700,800italic,800">
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+    <script type="text/javascript" src="dist/sorttable.js"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133390567-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-133390567-1');
+    </script>
+  </head>
+
+  <body class="w3-padding-64">
+
+      <div class="w3-top w3-bar w3-black w3-hide-small">
+        <a href="index.html" class="w3-bar-item w3-button" id="home_button">ViperScout</a>
+        <a href="all.html" class="w3-bar-item w3-button">All regionals/districts</a>
+        <a href="prediction.html" class="w3-bar-item w3-button">Match Prediction</a>
+        <a href="#" class="w3-bar-item w3-button w3-mobile w3-right viper-black-hover" id="questions_button">
+          <i class="fa fa-question-circle" alt="Questions?"></i>
+        </a>
+      </div>
+
+    <!-- Navbar on small screens (Hidden on medium and large screens) -->
+    <div class="w3-top w3-light-grey w3-hide-large w3-hide-medium" id="myNavbar">
+      <div class="w3-bar w3-center w3-large">
+        <a href="index.html" class="w3-bar-item w3-button w3-light-grey" style="width:25% !important" id="home_button"><i class="fa fa-home" alt="Home"></i></a>
+        <a href="all.html" class="w3-bar-item w3-button w3-light-grey" style="width:25% !important">All</a>
+        <a href="prediction.html" class="w3-bar-item w3-button w3-grey" style="width:25% !important">Predict</a>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="w3-padding-large" id="main">
+
+      <!-- Container for the regional list -->
+      <div class="w3-row" id="search_container">
+        <!-- Search box -->
+        <div class="w3-threequarter">
+          <input class="w3-input w3-border w3-padding" type="text" placeholder="Search for team" id="team_search">
+        </div>
+        <div class="w3-quarter">
+          <button id="team_submit" class="w3-black w3-block" style="margin-top: 8px; height: 40px;">Submit</button>
+        </div>
+      </div>
+
+      <div class="w3-container w3-center" id="detail_header">
+      </div>
+
+      <div class="w3-row w3-margin-top w3-margin-bottom" id="alliance-tabs" style="display:none">
+          <button class="w3-half w3-red w3-button" onclick="switchTab('red')">Red</button>
+          <button class="w3-half w3-blue w3-button" onclick="switchTab('blue')">Blue</button>
+      </div>
+
+      <div class="w3-justify w3-text-black w3-margin-bottom" id="detail_container">
+      </div>
+
+      <div class="w3-row w3-margin-top" id="blue_charts" style="display: none;">
+        <div class="w3-third w3-padding">
+          <canvas id="blue_chart" responsive="true" aspectRatio="1"></canvas>
+        </div>
+        <div class="w3-third w3-padding">
+          <canvas id="blue_auto_chart" responsive="true" aspectRatio="1"></canvas>
+        </div>
+        <div class="w3-third w3-padding">
+          <canvas id="blue_teleop_chart" responsive="true" aspectRatio="1"></canvas>
+        </div>
+      </div>
+
+      <div class="w3-row w3-margin-top" id="red_charts" style="display: none;">
+        <div class="w3-third w3-padding">
+          <canvas id="red_chart" responsive="true" aspectRatio="1"></canvas>
+        </div>
+        <div class="w3-third w3-padding">
+          <canvas id="red_auto_chart" responsive="true" aspectRatio="1"></canvas>
+        </div>
+        <div class="w3-third w3-padding">
+          <canvas id="red_teleop_chart" responsive="true" aspectRatio="1"></canvas>
+        </div>
+      </div>
+
+
+    </div>
+
+    <!-- END PAGE CONTENT -->
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.6.0/math.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
+    <script type="text/javascript" src="dist/scripts.js"></script>
+    <script src="./dist/bundle.js"></script>
+  </body>
+
+<script id="template-detail" type="text/template">
+  <h3>Match {{match}} in {{regional}}</h3>
+</script>
+
+
+<script id="template-detail-last" type="text/template">
+  <h4>Next match unavailable. Last match official score was blue: {{blue}}, red: {{red}}</h4>
+</script>
+
+<script id="header-template-auto" type="text/template">
+  <thead>
+    <tr class="w3-light-grey">
+      <th>Team</th>
+      <th>Low</th>
+      <th>Outer</th>
+      <th>Inner</th>
+    </tr>
+  </thead>
+</script>
+
+<script id="template-auto" type="text/template">
+  <tr>
+    <td>{{team}}</td>
+    <td>{{auto_low}}</td>
+    <td>{{auto_outer}}</td>
+    <td>{{auto_inner}}</td>
+  </tr>
+</script>
+
+<script id="header-template-teleop" type="text/template">
+  <thead>
+    <tr class="w3-light-grey">
+      <th>Team</th>
+      <th>Low</th>
+      <th>Outer</th>
+      <th>Inner</th>
+    </tr>
+  </thead>
+</script>
+
+<script id="template-teleop" type="text/template">
+  <tr>
+    <td>{{team}}</td>
+    <td>{{teleop_low}}</td>
+    <td>{{teleop_outer}}</td>
+    <td>{{teleop_inner}}</td>
+  </tr>
+</script>
+
+<script id="header-template-overall" type="text/template">
+  <thead>
+    <tr class="w3-light-grey">
+      <th>Team</th>
+      <th>OPRP</th>
+      <th>Auto Cells</th>
+      <th>Teleop Cells</th>
+      <th>Start</th>
+      <th>Climb</th>
+      <th>Level?</th>
+    </tr>
+  </thead>
+</script>
+
+<script id="template-overall" type="text/template">
+  <tr>
+    <td>{{team}}</td>
+    <td>{{oprp}}</td>
+    <td>{{auto}}</td>
+    <td>{{teleop}}</td>
+    <td>{{start}}</td>
+    <td>{{end}}</td>
+    <td>{{rung_level}}</td>
+  </tr>
+</script>
+
+<script id="div-template" type="text/template">
+  <div class="w3-row" id="{{color}}-details" style="display:none">
+    <div class="w3-third w3-padding w3-center">
+      <h4>Score: {{score}}</h4>
+      <table class="sortable w3-hoverable w3-striped w3-table" id="{{color}}-overall">
+      </table>
+    </div>
+    <div class="w3-third w3-padding w3-center">
+      <h4>Auto</h4>
+      <table class="sortable w3-hoverable w3-striped w3-table" id="{{color}}-auto">
+      </table>
+    </div>
+    <div class="w3-third w3-padding w3-center">
+      <h4>Teleop</h4>
+      <table class="sortable w3-hoverable w3-striped w3-table" id="{{color}}-teleop">
+      </table>
+    </div>
+  </div>
+</script>
+
+<script>
+function switchTab(color) {
+  var i;
+  var red = document.getElementById('red-details');
+  var red_charts = document.getElementById('red_charts');
+  var blue = document.getElementById('blue-details');
+  var blue_charts = document.getElementById('blue_charts');
+  if (color=='red') {
+    red.style.display = "block";
+    red_charts.style.display = "block";
+    blue.style.display = "none";  
+    blue_charts.style.display = "none"; 
+  } else {
+    blue.style.display = "block";
+    blue_charts.style.display = "block";
+    red.style.display = "none"; 
+    red_charts.style.display = "none"; 
+  }
+}
+</script>
+
+<script>
+    Chart.defaults.global.legend.display = false;
+    var html_charts = {
+        'red': {
+          'overall': document.getElementById('red_chart').getContext('2d'),
+          'auto': document.getElementById('red_auto_chart').getContext('2d'),
+          'teleop': document.getElementById('red_teleop_chart').getContext('2d')
+        },
+        'blue': {
+          'overall': document.getElementById('blue_chart').getContext('2d'),
+          'auto': document.getElementById('blue_auto_chart').getContext('2d'),
+          'teleop': document.getElementById('blue_teleop_chart').getContext('2d')
+        }
+    };
+
+    var chartColors = {
+        red: 'rgb(255, 0, 0, 0.4)',
+        pink: 'rgb(255, 99, 132, 0.4)',
+        orange: 'rgb(255, 159, 64, 0.4)',
+        dark_orange: 'rgb(255, 109, 64, 0.4)',
+        light_orange: 'rgb(255, 209, 64, 0.4)',
+        yellow: 'rgb(255, 205, 86, 0.4)',
+        green: 'rgb(75, 192, 192, 0.4)',
+        blue: 'rgb(54, 162, 235, 0.4)',
+        purple: 'rgb(153, 102, 255, 0.4)',
+        grey: 'rgb(201, 203, 207, 0.4)'
+    };
+
+    var tba = new TBA();
+    var colors = [ 'blue', 'red' ];
+
+    var previousTeam = Cookies.get('team');
+    if (previousTeam) {
+      $('#team_search').val(previousTeam.replace('frc',''));
+      lookupTeam(previousTeam);
+    }
+    
+    $('#team_submit').on('click', function() {
+      document.getElementById('red_charts').style.display = "none";
+      document.getElementById('blue_charts').style.display = "none";
+      document.getElementById("detail_container").innerHTML = "";
+      document.getElementById("detail_header").innerHTML = "";
+      var team = 'frc' + $('#team_search').val();
+      Cookies.set('team', team, { expires: 365 });
+      lookupTeam(team);
+    });
+
+    function lookupTeam(team) {
+      tba.getOverallTeamNextMatch(team, function(result_new) {
+        if (!result_new) {
+          tba.getOverallTeamLastMatch(team, function(result_last) {
+            if (result_last)
+              calcStats(result_last, false);
+          });
+        } else {
+          calcStats(result_new, true);
+        }
+      });
+    }
+
+    function calcStats(match, new_match) {
+
+      // Setup header
+      var detailTemplate = document.getElementById("template-detail");
+      var detailLastTemplate = document.getElementById("template-detail-last");
+      var detailTemplateHtml = detailTemplate.innerHTML;
+      var detailLastTemplateHtml = detailLastTemplate.innerHTML;
+      detailTemplateHtml = detailTemplateHtml.replace(/{{match}}/g, match.comp_level.toUpperCase()+match.match_number)
+                                          .replace(/{{regional}}/g, match.event_key);
+      if (!new_match) {
+        detailLastTemplateHtml = detailLastTemplateHtml.replace(/{{red}}/g, match.alliances.red.score)
+                                                       .replace(/{{blue}}/g, match.alliances.blue.score);
+        document.getElementById("detail_header").innerHTML = detailTemplateHtml + detailLastTemplateHtml;
+      } else {
+        document.getElementById("detail_header").innerHTML += detailTemplateHtml;
+      }
+
+      tba.genOPRs(match.event_key, function(results) {
+
+        for (var color in colors) {
+
+          var teamDataset = [{
+                  data: [],
+                  backgroundColor: chartColors.grey,
+                  label: 'Start'
+              },{
+                  data: [],
+                  backgroundColor: chartColors.yellow,
+                  label: 'Auto'
+              },{
+                  data: [],
+                  backgroundColor: chartColors.purple,
+                  label: 'Teleop'
+              },{
+                  data: [],
+                  backgroundColor: chartColors.red,
+                  label: 'Climb'
+              },{
+                  data: [],
+                  backgroundColor: chartColors.pink,
+                  label: 'Level?'
+              }];
+
+          var autoDataset = [{
+                  data: [],
+                  backgroundColor: chartColors.blue,
+                  label: 'Low'
+              },{
+                  data: [],
+                  backgroundColor: chartColors.green,
+                  label: 'Outer'
+              },{
+                  data: [],
+                  backgroundColor: chartColors.orange,
+                  label: 'Inner'
+              }];
+
+          var teleopDataset = [{
+                  data: [],
+                  backgroundColor: chartColors.blue,
+                  label: 'Low'
+              },{
+                  data: [],
+                  backgroundColor: chartColors.green,
+                  label: 'Outer'
+              },{
+                  data: [],
+                  backgroundColor: chartColors.orange,
+                  label: 'Inner'
+              }];
+
+          var teams = [ match.alliances[colors[color]].team_keys[0].replace('frc',''),
+                       match.alliances[colors[color]].team_keys[1].replace('frc',''),
+                       match.alliances[colors[color]].team_keys[2].replace('frc','') ];
+
+          // Setup cargo table
+          var autoTemplate = document.getElementById("template-auto");
+          var autoHeader = document.getElementById("header-template-auto");
+          var autoTemplateHtml = autoTemplate.innerHTML;
+          var autoHeaderHtml = autoHeader.innerHTML;
+          autoHeaderHtml = autoHeaderHtml.replace(/{{color}}/g, colors[color]);
+          var autoHtml = autoHeaderHtml;
+
+          // Setup rocket table
+          var teleopTemplate = document.getElementById("template-teleop");
+          var teleopHeader = document.getElementById("header-template-teleop");
+          var teleopTemplateHtml = teleopTemplate.innerHTML;
+          var teleopHeaderHtml = teleopHeader.innerHTML;
+          teleopHeaderHtml = teleopHeaderHtml.replace(/{{color}}/g, colors[color]);
+          var teleopHtml = teleopHeaderHtml;
+
+          // Setup rocket table
+          var overallTemplate = document.getElementById("template-overall");
+          var overallHeader = document.getElementById("header-template-overall");
+          var overallTemplateHtml = overallTemplate.innerHTML;
+          var overallHeaderHtml = overallHeader.innerHTML;
+          overallHeaderHtml = overallHeaderHtml.replace(/{{color}}/g, colors[color]);
+          var overallHtml = overallHeaderHtml;
+
+          var score = 0;
+          for (var team in teams) {
+            var result;
+            if (!(teams[team] in results)) {
+              result = {
+                        'autoCellsInner': 0,
+                        'autoCellsOuter': 0,
+                        'autoCellsBottom': 0,
+                        'teleopCellsInner': 0,
+                        'teleopCellsOuter': 0,
+                        'teleopCellsBottom': 0,
+                        'move': 0,
+                        'climb': 0,
+                        'rung_level': 0,
+                        'opr': 0,
+                        'oprp': 0
+                      };
+            } else {
+               result = results[teams[team]];
+            }
+            score += result.oprp;
+            autoHtml += autoTemplateHtml.replace(/{{team}}/g, teams[team])
+                                          .replace(/{{auto_low}}/g, result.autoCellsBottom.toFixed(1))
+                                          .replace(/{{auto_outer}}/g, result.autoCellsOuter.toFixed(1))
+                                          .replace(/{{auto_inner}}/g, result.autoCellsInner.toFixed(1));
+            teleopHtml += teleopTemplateHtml.replace(/{{team}}/g, teams[team])
+                                          .replace(/{{teleop_low}}/g, result.teleopCellsBottom.toFixed(1))
+                                          .replace(/{{teleop_outer}}/g, result.teleopCellsOuter.toFixed(1))
+                                          .replace(/{{teleop_inner}}/g, result.teleopCellsInner.toFixed(1));
+            overallHtml += overallTemplateHtml.replace(/{{team}}/g, teams[team])
+                                          .replace(/{{oprp}}/g, result.oprp.toFixed(1))
+                                          .replace(/{{start}}/g, result.move.toFixed(1))
+                                          .replace(/{{end}}/g, result.climb.toFixed(1))
+                                          .replace(/{{rung_level}}/g, result.rung_level.toFixed(1))
+                                          .replace(/{{auto}}/g,
+                                                    (result.autoCellsBottom +
+                                                     result.autoCellsInner +
+                                                     result.autoCellsOuter).toFixed(1))
+                                          .replace(/{{teleop}}/g,
+                                                    (result.teleopCellsInner +
+                                                     result.teleopCellsOuter +
+                                                     result.teleopCellsBottom).toFixed(1));
+            teamDataset[0].data.push(result.move.toFixed(1));
+            teamDataset[1].data.push((result.autoCellsBottom +
+                                      result.autoCellsInner +
+                                      result.autoCellsOuter).toFixed(1));
+            teamDataset[2].data.push((result.teleopCellsInner +
+                                      result.teleopCellsOuter +
+                                      result.teleopCellsBottom).toFixed(1));
+            teamDataset[3].data.push(result.climb.toFixed(1));
+            teamDataset[4].data.push(result.rung_level.toFixed(1));
+            autoDataset[0].data.push(result.autoCellsBottom.toFixed(1));
+            autoDataset[1].data.push(result.autoCellsOuter.toFixed(1));
+            autoDataset[2].data.push(result.autoCellsInner.toFixed(1));
+            teleopDataset[0].data.push(result.teleopCellsBottom.toFixed(1));
+            teleopDataset[1].data.push(result.teleopCellsOuter.toFixed(1));
+            teleopDataset[2].data.push(result.teleopCellsInner.toFixed(1));
+          }
+
+          // Fill div
+          var detailDiv = document.getElementById("div-template");
+          var detailDivHtml = detailDiv.innerHTML;
+          detailDivHtml = detailDivHtml.replace(/{{color}}/g, colors[color])
+                                       .replace(/{{score}}/g, score.toFixed(0));
+          document.getElementById("detail_container").innerHTML += detailDivHtml;
+
+          document.getElementById(colors[color] + "-auto").innerHTML = autoHtml;
+          sorttable.makeSortable(document.getElementById(colors[color] + "-auto"));
+          document.getElementById(colors[color] + "-teleop").innerHTML = teleopHtml;
+          sorttable.makeSortable(document.getElementById(colors[color] + "-teleop"));
+          document.getElementById(colors[color] + "-overall").innerHTML = overallHtml;
+          sorttable.makeSortable(document.getElementById(colors[color] + "-overall"));    
+        
+          var overallChartData = {
+              type: 'bar',
+              data: {
+                  labels: teams,
+                  datasets: teamDataset
+              },
+              options: {
+                  title: {
+                      display: true,
+                      text: 'Overall'
+                  },
+                  scales: {
+                      xAxes: [{ stacked: true }],
+                      yAxes: [{
+                          ticks: {
+                              suggestedMax: 25,
+                              beginAtZero: true
+                          },
+                          stacked: true
+                      }]
+                  }
+              }
+          };
+          var chart = new Chart(html_charts[colors[color]].overall, overallChartData);
+        
+          var autoChartData = {
+              type: 'bar',
+              data: {
+                  labels: teams,
+                  datasets: autoDataset
+              },
+              options: {
+                  title: {
+                      display: true,
+                      text: 'Auto Cells'
+                  },
+                  scales: {
+                      xAxes: [{ stacked: true }],
+                      yAxes: [{
+                          ticks: {
+                              suggestedMax: 10,
+                              beginAtZero: true
+                          },
+                          stacked: true
+                      }]
+                  }
+              }
+          };
+          var chart = new Chart(html_charts[colors[color]].auto, autoChartData);
+        
+          var teleopChartData = {
+              type: 'bar',
+              data: {
+                  labels: teams,
+                  datasets: teleopDataset
+              },
+              options: {
+                  title: {
+                      display: true,
+                      text: 'Teleop Cells'
+                  },
+                  scales: {
+                      xAxes: [{ stacked: true }],
+                      yAxes: [{
+                          ticks: {
+                              suggestedMax: 10,
+                              beginAtZero: true
+                          },
+                          stacked: true
+                      }]
+                  }
+              }
+          };
+          var chart = new Chart(html_charts[colors[color]].teleop, teleopChartData);
+
+          document.getElementById('alliance-tabs').style.display = 'block';
+        }
+      });
+    }
+</script>
+
+</html>
