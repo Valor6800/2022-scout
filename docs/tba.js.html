@@ -1,4 +1,52 @@
-'use strict';
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Source: tba.js | Source: tba.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-jsdoc.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/tui-doc.css">
+
+    
+</head>
+<body>
+<nav class="lnb" id="lnb">
+    <div class="logo" style="">
+        
+            <img src="img/toast-ui.png" width="100%" height="100%">
+        
+    </div>
+    <div class="title">
+        <h1><a href="index.html" class="link">Source: tba.js</a></h1>
+        
+    </div>
+    <div class="search-container" id="search-container">
+        <input type="text" placeholder="Search">
+        <ul></ul>
+    </div>
+    
+    <div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="TBA.html">TBA</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TBA_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="TBA.html#getEvent">getEvent</a></li><li><a href="TBA.html#getMatch">getMatch</a></li><li><a href="TBA.html#getTeams">getTeams</a></li></ul></div></li><li><a href="TBA_Generator.html">TBA_Generator</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TBA_Generator_sub"></div></li></ul></div>
+</nav>
+<div id="resizer"></div>
+
+<div class="main" id="main">
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
 
 (function() {
     var root = this;
@@ -317,11 +365,11 @@
             let fouls = [0, 0];
             for (var color in colors) {
                 let sums = this.parse2022Match(match[colors[color]]);
-                for (var i = 0; i < 3; i++) {
+                for (var i = 0; i &lt; 3; i++) {
                     var robot = parseInt(complete_match_data.alliances[colors[color]].team_keys[i].replace('frc', ''));
                     if (!(robot in results))
                         results[robot] = {};
-                    for (var j = 0; j < this.component_opr_keys.length; j++) {
+                    for (var j = 0; j &lt; this.component_opr_keys.length; j++) {
                         if (j === this.foul_idx) {
                             fouls[1 - color] = sums[this.component_opr_keys[j]];
                         } else {
@@ -336,7 +384,7 @@
                 }
             }
             for (var color in colors) {
-                for (var i = 0; i < 3; i++) {
+                for (var i = 0; i &lt; 3; i++) {
                     var robot = parseInt(complete_match_data.alliances[colors[color]].team_keys[i].replace('frc', ''));
                     results[robot][this.component_opr_keys[this.foul_idx]] = fouls[color];
                 }
@@ -351,7 +399,7 @@
         genCSV(oprs, callback = null)
         {
             process.stdout.write("team,opr,oprp,");
-            for (var j = 0; j < this.component_opr_keys.length; j++) {
+            for (var j = 0; j &lt; this.component_opr_keys.length; j++) {
                 process.stdout.write(this.component_opr_keys[j] + ",");
             }
             process.stdout.write("\n");
@@ -376,7 +424,7 @@
                     return null;
                 }
                 for (var match in matches) {
-                    if (matches[match].actual_time && (
+                    if (matches[match].actual_time &amp;&amp; (
                         matches[match].comp_level === 'qm')) {
                         var parsed_match = this.parseMatch(matches[match]);
                         for (var team in parsed_match) {
@@ -387,14 +435,14 @@
                                     'matches': 0,
                                     'teams_played_with': []
                                 };
-                                for (var i = 0; i < this.component_opr_keys.length; i++) {
+                                for (var i = 0; i &lt; this.component_opr_keys.length; i++) {
                                     results[team][this.component_opr_keys[i]] = 0;
                                 }
                             }
 
                             // Fill sum table
                             results[team].matches += 1;
-                            for (var i = 0; i < this.component_opr_keys.length; i++) {
+                            for (var i = 0; i &lt; this.component_opr_keys.length; i++) {
                                 let key = this.component_opr_keys[i];
                                 results[team][key] += parsed_match[team][key];
                             }
@@ -419,7 +467,7 @@
                 // B represents the sum of a component you are trying to solve for
 
                 // Set the sum arrays to empty
-                for (var i = 0; i < this.component_opr_keys.length; i++) {
+                for (var i = 0; i &lt; this.component_opr_keys.length; i++) {
                     B[this.component_opr_keys[i]] = [];
                 }
 
@@ -449,14 +497,14 @@
                     //   [[543] [234]]
                     //   [[856] [134]]
                     //   [[245] [328]]
-                    for (var i = 0; i < this.component_opr_keys.length; i++) {
+                    for (var i = 0; i &lt; this.component_opr_keys.length; i++) {
                         B[this.component_opr_keys[i]].push(results[team][this.component_opr_keys[i]]);
                     }
                 }
 
                 // Solve Ax = B[z] for each z
                 var opr_arrays = {};
-                for (var i = 0; i < this.component_opr_keys.length; i++) {
+                for (var i = 0; i &lt; this.component_opr_keys.length; i++) {
                     opr_arrays[this.component_opr_keys[i]] = math.lusolve(A, B[this.component_opr_keys[i]]);
                 }
 
@@ -467,7 +515,7 @@
                     if (team == 0)
                         continue;
                     oprs[team] = {'opr': 0, 'oprp': 0};
-                    for (var j = 0; j < this.component_opr_keys.length; j++) {
+                    for (var j = 0; j &lt; this.component_opr_keys.length; j++) {
                         oprs[team][this.component_opr_keys[j]] = opr_arrays[this.component_opr_keys[j]][i][0];
                         if (j === this.foul_idx) {
                             oprs[team].oprp -= oprs[team][this.component_opr_keys[j]];
@@ -488,7 +536,7 @@
         parse2022Cargo(color, match)
         {
             let sums = {};
-            for (var i = 0; i < this.cargo_tracking.length; i++) {
+            for (var i = 0; i &lt; this.cargo_tracking.length; i++) {
                 sums[this.cargo_tracking[i]] = {'red': 0, 'blue': 0};
             }
         }
@@ -496,7 +544,7 @@
         parse2022Match(match)
         {
             let sums = {};
-            for (var i = 0; i < this.component_opr_keys.length; i++) {
+            for (var i = 0; i &lt; this.component_opr_keys.length; i++) {
                 sums[this.component_opr_keys[i]] = 0;
             }
 
@@ -518,7 +566,7 @@
                                                match['teleopCargoUpperRed'];
 
             // Hab game element
-            for (var i = 1; i <= 3; i++) {
+            for (var i = 1; i &lt;= 3; i++) {
                 sums[this.component_opr_keys[5]] += match['taxiRobot' + i] === 'Yes' ? 2 : 0;
                 sums[this.component_opr_keys[6]] += match['endgameRobot' + i] === 'Traversal' ? 15 :
                                                    (match['endgameRobot' + i] === 'High' ? 10 :
@@ -536,11 +584,11 @@
         parse2020Match(match)
         {
             let sums = {};
-            for (var i = 0; i < this.component_opr_keys.length; i++) {
+            for (var i = 0; i &lt; this.component_opr_keys.length; i++) {
                 sums[this.component_opr_keys[i]] = 0;
             }
 
-            for (var i = 0; i < 6; i++) {
+            for (var i = 0; i &lt; 6; i++) {
                 sums[this.component_opr_keys[i]] = match[this.component_opr_keys[i]];
                 if (this.component_opr_keys[i].includes('Outer')) {
                     if (this.component_opr_keys[i].includes('auto'))
@@ -563,14 +611,14 @@
             }
 
             // Hab game element
-            for (var i = 1; i <= 3; i++) {
+            for (var i = 1; i &lt;= 3; i++) {
                 sums[this.component_opr_keys[6]] += match['initLineRobot' + i] === 'Exited' ? 5 : 0;
                 sums[this.component_opr_keys[7]] += match['endgameRobot' + i] === 'Hang' ? 25 : (match['endgameRobot' + i] === 'Park' ? 5 : 0);
             }
 
             // Foul points
             sums[this.component_opr_keys[8]] += match['foulPoints'];
-            sums[this.component_opr_keys[9]] += (match['endgameRungIsLevel'] === 'IsLevel' && sums[this.component_opr_keys[7]] > 15) ? 15 : 0;
+            sums[this.component_opr_keys[9]] += (match['endgameRungIsLevel'] === 'IsLevel' &amp;&amp; sums[this.component_opr_keys[7]] > 15) ? 15 : 0;
             sums[this.component_opr_keys[10]] += match['controlPanelPoints'];
 
             // Return element sum array
@@ -580,12 +628,12 @@
         parse2019Match(match)
         {
             let sums = {};
-            for (var i = 0; i < this.component_opr_keys.length; i++) {
+            for (var i = 0; i &lt; this.component_opr_keys.length; i++) {
                 sums[this.component_opr_keys[i]] = 0;
             }
 
             // Cargoship game element
-            for (var i = 1; i <= 8; i++) {
+            for (var i = 1; i &lt;= 8; i++) {
                 let bay = match['bay' + i].replace('And', '');
                 let scored_bay = bay.replace(match['preMatchBay' + i], '');
 
@@ -617,7 +665,7 @@
                 'topLeftRocketNear',
                 'topRightRocketNear'
             ];
-            for (var i = 0; i < tba_scoring_keys.length; i++) {
+            for (var i = 0; i &lt; tba_scoring_keys.length; i++) {
                 let slot = match[tba_scoring_keys[i]].replace('And', '');
 
                 let index = -1;
@@ -635,7 +683,7 @@
             }
 
             // Hab game element
-            for (var i = 1; i <= 3; i++) {
+            for (var i = 1; i &lt;= 3; i++) {
                 let robot_start = parseInt(match['preMatchLevelRobot' + i].replace('HabLevel', ''));
                 let robot_climb = parseInt(match['endgameRobot' + i].replace('HabLevel', ''));
                 let robot_auto_move = match['habLineRobot' + i] == 'CrossedHabLineInSandstorm';
@@ -651,10 +699,10 @@
             sums[this.component_opr_keys[12]] += match['foulPoints'];
 
             // Convert scored elements into points
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i &lt; 5; i++) {
                 sums[this.component_opr_keys[i]] *= 2;
             }
-            for (var i = 5; i < 10; i++) {
+            for (var i = 5; i &lt; 10; i++) {
                 sums[this.component_opr_keys[i]] *= 3;
             }
 
@@ -665,7 +713,7 @@
     };
 
     if ( typeof exports !== 'undefined' ) {
-        if ( typeof module !== 'undefined' && module.exports ) {
+        if ( typeof module !== 'undefined' &amp;&amp; module.exports ) {
             exports = module.exports = TBA;
         }
         exports.TBA = TBA;
@@ -674,3 +722,33 @@
     }
 
 }).call(this);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<footer>
+    <img class="logo" src="img/toast-ui.png" style="">
+    <div class="footer-text">NHN Entertainment. Frontend Development Lab</div>
+</footer>
+<script>prettyPrint();</script>
+<script src="scripts/jquery.min.js"></script>
+<script src="scripts/tui-doc.js"></script>
+<script src="scripts/linenumber.js"></script>
+
+    <script>
+        var id = '_sub'.replace(/"/g, '_');
+        var selectedApi = document.getElementById(id); // do not use jquery selector
+        var $selectedApi = $(selectedApi);
+
+        $selectedApi.removeClass('hidden');
+        $selectedApi.parent().find('.glyphicon').removeClass('glyphicon-plus').addClass('glyphicon-minus');
+        showLnbApi();
+    </script>
+
+</body>
+</html>

@@ -83,7 +83,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.6.0/math.js"></script>
     <script type="text/javascript" src="dist/scripts.js"></script>
     <script src="./dist/min.tba.js"></script>
-    <!-- <script src="./dist/min.tba_generator.js"></script> -->
+    <script src="./dist/min.tba_generator.js"></script>
   </body>
 
 <script id="reg-header-table" type="text/template">
@@ -152,6 +152,8 @@
       $("#questions_alert").show();
     });
     var tba = new TBA();
+    var tba_gen = new TBA_Generator();
+    console.log(tba_gen.rnd(49));
 
     tba.getEvents(function(results) {
 
