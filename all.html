@@ -8,20 +8,8 @@
     <title>ViperScout</title>
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600italic,600,700italic,700,800italic,800">
     <link rel="stylesheet" type="text/css" href="./styles.css">
     <script type="text/javascript" src="dist/sorttable.js"></script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133390567-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'UA-133390567-1');
-    </script>
   </head>
 
   <body class="w3-padding-64">
@@ -76,7 +64,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.6.0/math.js"></script>
     <script type="text/javascript" src="dist/scripts.js"></script>
-    <script src="./dist/bundle.js"></script>
+    <script src="./dist/min.tba.js"></script>
   </body>
 
 <script id="reg-header-table" type="text/template">
@@ -100,18 +88,15 @@
         <td>Team</td>
         <td>OPR</td>
         <td>OPRP</td>
-        <td>Auto Line</td>
+        <td>Taxi</td>
         <td>Climb</td>
-        <td>Rung Level?</td>
-        <td>Auto Cells</td>
-        <td>Auto Inner</td>
-        <td>Auto Outer</td>
-        <td>Auto Bottom</td>
-        <td>Teleop Cells</td>
-        <td>Teleop Inner</td>
-        <td>Teleop Outer</td>
-        <td>Teleop Bottom</td>
-        <td>Control Panel</td>
+        <td>Quintet</td>
+        <td>Auto Cargo</td>
+        <td>Auto Cargo Upper</td>
+        <td>Auto Cargo Lower</td>
+        <td>Teleop Cargo</td>
+        <td>Teleop Cargo Upper</td>
+        <td>Teleop Cargo Lower</td>
         <td>Penalty</td>
     </thead>
 </script>
@@ -121,18 +106,15 @@
         <td><a href="{{url}}">{{team}}</a></td>
         <td>{{opr}}</td>
         <td>{{oprp}}</td>
-        <td>{{move}}</td>
+        <td>{{taxi}}</td>
         <td>{{climb}}</td>
-        <td>{{rung_level}}</td>
+        <td>{{quintet}}</td>
         <td>{{auto}}</td>
-        <td>{{autoCellsInner}}</td>
-        <td>{{autoCellsOuter}}</td>
-        <td>{{autoCellsBottom}}</td>
+        <td>{{autoCargoUpper}}</td>
+        <td>{{autoCargoLower}}</td>
         <td>{{teleop}}</td>
-        <td>{{teleopCellsInner}}</td>
-        <td>{{teleopCellsOuter}}</td>
-        <td>{{teleopCellsBottom}}</td>
-        <td>{{panel}}</td>
+        <td>{{teleopCargoUpper}}</td>
+        <td>{{teleopCargoLower}}</td>
         <td>{{penalty}}</td>
     </tr>
 </script>
@@ -161,23 +143,21 @@
   function displayResults(results) {
       if (results) {
         for (var team in results) {
-            listHtml += OPRTemplateHtml.replace(/{{url}}/g, "https://www.thebluealliance.com/team/" + team)
-                                            .replace(/{{team}}/g, team)
-                                            .replace(/{{opr}}/g, results[team].opr.toFixed(2))
-                                            .replace(/{{oprp}}/g, results[team].oprp.toFixed(2))
-                                            .replace(/{{move}}/g, results[team].move.toFixed(2))
-                                            .replace(/{{climb}}/g, results[team].climb.toFixed(2))
-                                            .replace(/{{rung_level}}/g, results[team].rung_level.toFixed(2))
-                                            .replace(/{{auto}}/g, (results[team].autoCellsInner + results[team].autoCellsOuter + results[team].autoCellsBottom).toFixed(2))
-                                            .replace(/{{autoCellsInner}}/g, results[team].autoCellsInner.toFixed(2))
-                                            .replace(/{{autoCellsOuter}}/g, results[team].autoCellsOuter.toFixed(2))
-                                            .replace(/{{autoCellsBottom}}/g, results[team].autoCellsBottom.toFixed(2))
-                                            .replace(/{{teleop}}/g, (results[team].teleopCellsInner + results[team].teleopCellsOuter + results[team].teleopCellsBottom).toFixed(2))
-                                            .replace(/{{teleopCellsInner}}/g, results[team].teleopCellsInner.toFixed(2))
-                                            .replace(/{{teleopCellsOuter}}/g, results[team].teleopCellsOuter.toFixed(2))
-                                            .replace(/{{teleopCellsBottom}}/g, results[team].teleopCellsBottom.toFixed(2))
-                                            .replace(/{{panel}}/g, results[team].panel.toFixed(2))
-                                            .replace(/{{penalty}}/g, results[team].penalty.toFixed(2))
+            let url = "prediction.html?team=" + team;
+            listHtml += OPRTemplateHtml.replace(/{{url}}/g, url)
+                                                  .replace(/{{team}}/g, team)
+                                                  .replace(/{{opr}}/g, results[team].opr.toFixed(2))
+                                                  .replace(/{{oprp}}/g, results[team].oprp.toFixed(2))
+                                                  .replace(/{{taxi}}/g, results[team].taxi.toFixed(2))
+                                                  .replace(/{{climb}}/g, results[team].climb.toFixed(2))
+                                                  .replace(/{{quintet}}/g, results[team].quintet.toFixed(2))
+                                                  .replace(/{{auto}}/g, (results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
+                                                  .replace(/{{autoCargoUpper}}/g, results[team].autoCargoUpper.toFixed(2))
+                                                  .replace(/{{autoCargoLower}}/g, results[team].autoCargoLower.toFixed(2))
+                                                  .replace(/{{teleop}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower).toFixed(2))
+                                                  .replace(/{{teleopCargoUpper}}/g, results[team].teleopCargoUpper.toFixed(2))
+                                                  .replace(/{{teleopCargoLower}}/g, results[team].teleopCargoLower.toFixed(2))
+                                                  .replace(/{{penalty}}/g, results[team].penalty.toFixed(2))
 	}
 	// Replace the HTML of #list with final HTML
         document.getElementById("opr_table").innerHTML = listHtml;
@@ -188,11 +168,9 @@
   tba.getEvents(function(events) {
     for (var key in events) {
       if (events[key].event_type !== 100) {
-        tba.genOPRs('2020' + events[key].event_code, displayResults.bind(events[key]));
+        tba.genOPRs('2022' + events[key].event_code, displayResults.bind(events[key]));
       }
     }
-    tba.genOPRs('2021txcb', displayResults.bind('2021txcb'));
-    tba.genOPRs('2021txcls', displayResults.bind('2021txcls'));
   });
 </script>
 

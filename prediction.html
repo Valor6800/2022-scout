@@ -5,29 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>ViperScout</title>
+    <title>Valor Scout</title>
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:400italic,400,600italic,600,700italic,700,800italic,800">
     <link rel="stylesheet" type="text/css" href="./styles.css">
     <script type="text/javascript" src="dist/sorttable.js"></script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133390567-1"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'UA-133390567-1');
-    </script>
   </head>
 
   <body class="w3-padding-64">
 
       <div class="w3-top w3-bar w3-black w3-hide-small">
-        <a href="index.html" class="w3-bar-item w3-button" id="home_button">ViperScout</a>
+        <a href="index.html" class="w3-bar-item w3-button" id="home_button">Valor Scout</a>
         <a href="all.html" class="w3-bar-item w3-button">All regionals/districts</a>
         <a href="prediction.html" class="w3-bar-item w3-button">Match Prediction</a>
         <a href="#" class="w3-bar-item w3-button w3-mobile w3-right viper-black-hover" id="questions_button">
@@ -104,7 +92,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.6.0/math.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
     <script type="text/javascript" src="dist/scripts.js"></script>
-    <script src="./dist/bundle.js"></script>
+    <script src="./dist/min.tba.js"></script>
   </body>
 
 <script id="template-detail" type="text/template">
@@ -120,9 +108,8 @@
   <thead>
     <tr class="w3-light-grey">
       <th>Team</th>
-      <th>Low</th>
-      <th>Outer</th>
-      <th>Inner</th>
+      <th>Lower Cargo</th>
+      <th>Upper Cargo</th>
     </tr>
   </thead>
 </script>
@@ -130,9 +117,8 @@
 <script id="template-auto" type="text/template">
   <tr>
     <td>{{team}}</td>
-    <td>{{auto_low}}</td>
-    <td>{{auto_outer}}</td>
-    <td>{{auto_inner}}</td>
+    <td>{{auto_lower}}</td>
+    <td>{{auto_upper}}</td>
   </tr>
 </script>
 
@@ -140,9 +126,8 @@
   <thead>
     <tr class="w3-light-grey">
       <th>Team</th>
-      <th>Low</th>
-      <th>Outer</th>
-      <th>Inner</th>
+      <th>Lower Cargo</th>
+      <th>Upper Cargo</th>
     </tr>
   </thead>
 </script>
@@ -150,9 +135,8 @@
 <script id="template-teleop" type="text/template">
   <tr>
     <td>{{team}}</td>
-    <td>{{teleop_low}}</td>
-    <td>{{teleop_outer}}</td>
-    <td>{{teleop_inner}}</td>
+    <td>{{teleop_lower}}</td>
+    <td>{{teleop_upper}}</td>
   </tr>
 </script>
 
@@ -161,11 +145,11 @@
     <tr class="w3-light-grey">
       <th>Team</th>
       <th>OPRP</th>
-      <th>Auto Cells</th>
-      <th>Teleop Cells</th>
-      <th>Start</th>
-      <th>Climb</th>
-      <th>Level?</th>
+      <th>Auto Pts</th>
+      <th>Teleop Pts</th>
+      <th>Taxi Pts</th>
+      <th>Climb Pts</th>
+      <th>Penalty Pts</th>
     </tr>
   </thead>
 </script>
@@ -176,9 +160,9 @@
     <td>{{oprp}}</td>
     <td>{{auto}}</td>
     <td>{{teleop}}</td>
-    <td>{{start}}</td>
-    <td>{{end}}</td>
-    <td>{{rung_level}}</td>
+    <td>{{taxi}}</td>
+    <td>{{climb}}</td>
+    <td>{{penalty}}</td>
   </tr>
 </script>
 
@@ -190,12 +174,12 @@
       </table>
     </div>
     <div class="w3-third w3-padding w3-center">
-      <h4>Auto</h4>
+      <h4>Auto Cargo</h4>
       <table class="sortable w3-hoverable w3-striped w3-table" id="{{color}}-auto">
       </table>
     </div>
     <div class="w3-third w3-padding w3-center">
-      <h4>Teleop</h4>
+      <h4>Teleop Cargo</h4>
       <table class="sortable w3-hoverable w3-striped w3-table" id="{{color}}-teleop">
       </table>
     </div>
@@ -224,6 +208,7 @@ function switchTab(color) {
 </script>
 
 <script>
+
     Chart.defaults.global.legend.display = false;
     var html_charts = {
         'red': {
@@ -255,7 +240,15 @@ function switchTab(color) {
     var colors = [ 'blue', 'red' ];
 
     var previousTeam = Cookies.get('team');
-    if (previousTeam) {
+
+    var url = new URL(window.location.href);
+    var parsedTeam = url.searchParams.get("team");
+    var simulated = url.searchParams.get("simulated");
+
+    if (parsedTeam) {
+      $('#team_search').val(parsedTeam.replace('frc',''));
+      lookupTeam(parsedTeam, simulated && simulated == 'true');
+    } else if (previousTeam) {
       $('#team_search').val(previousTeam.replace('frc',''));
       lookupTeam(previousTeam);
     }
@@ -270,7 +263,7 @@ function switchTab(color) {
       lookupTeam(team);
     });
 
-    function lookupTeam(team) {
+    function lookupTeam(team, simulated=false) {
       tba.getOverallTeamNextMatch(team, function(result_new) {
         if (!result_new) {
           tba.getOverallTeamLastMatch(team, function(result_last) {
@@ -280,7 +273,7 @@ function switchTab(color) {
         } else {
           calcStats(result_new, true);
         }
-      });
+      }, simulated);
     }
 
     function calcStats(match, new_match) {
@@ -301,62 +294,60 @@ function switchTab(color) {
       }
 
       tba.genOPRs(match.event_key, function(results) {
-
         for (var color in colors) {
 
           var teamDataset = [{
                   data: [],
                   backgroundColor: chartColors.grey,
-                  label: 'Start'
+                  label: 'Taxi Pts'
               },{
                   data: [],
                   backgroundColor: chartColors.yellow,
-                  label: 'Auto'
+                  label: 'Auto Pts'
               },{
                   data: [],
                   backgroundColor: chartColors.purple,
-                  label: 'Teleop'
+                  label: 'Teleop Pts'
+              },{
+                  data: [],
+                  backgroundColor: chartColors.green,
+                  label: 'Climb Pts'
               },{
                   data: [],
                   backgroundColor: chartColors.red,
-                  label: 'Climb'
-              },{
-                  data: [],
-                  backgroundColor: chartColors.pink,
-                  label: 'Level?'
+                  label: 'Penalty Pts'
               }];
 
           var autoDataset = [{
                   data: [],
                   backgroundColor: chartColors.blue,
-                  label: 'Low'
+                  label: 'Lower Cargo Pts'
               },{
                   data: [],
                   backgroundColor: chartColors.green,
-                  label: 'Outer'
-              },{
-                  data: [],
-                  backgroundColor: chartColors.orange,
-                  label: 'Inner'
+                  label: 'Upper Cargo Pts'
               }];
 
           var teleopDataset = [{
                   data: [],
                   backgroundColor: chartColors.blue,
-                  label: 'Low'
+                  label: 'Lower Cargo Pts'
               },{
                   data: [],
                   backgroundColor: chartColors.green,
-                  label: 'Outer'
-              },{
-                  data: [],
-                  backgroundColor: chartColors.orange,
-                  label: 'Inner'
+                  label: 'Upper Cargo Pts'
               }];
 
-          var teams = [ match.alliances[colors[color]].team_keys[0].replace('frc',''),
-                       match.alliances[colors[color]].team_keys[1].replace('frc',''),
-                       match.alliances[colors[color]].team_keys[2].replace('frc','') ];
+          if (simulated && simulated == 'true') {
+            var keys = Object.keys(results);
+            var teams = [ keys[tba.gen.rnd(keys.length - 1)],
+                          keys[tba.gen.rnd(keys.length - 1)],
+                          keys[tba.gen.rnd(keys.length - 1)]];
+          } else {
+            var teams = [ match.alliances[colors[color]].team_keys[0].replace('frc',''),
+                         match.alliances[colors[color]].team_keys[1].replace('frc',''),
+                         match.alliances[colors[color]].team_keys[2].replace('frc','') ];
+          }
 
           // Setup cargo table
           var autoTemplate = document.getElementById("template-auto");
@@ -387,15 +378,13 @@ function switchTab(color) {
             var result;
             if (!(teams[team] in results)) {
               result = {
-                        'autoCellsInner': 0,
-                        'autoCellsOuter': 0,
-                        'autoCellsBottom': 0,
-                        'teleopCellsInner': 0,
-                        'teleopCellsOuter': 0,
-                        'teleopCellsBottom': 0,
-                        'move': 0,
+                        'autoCargoLower': 0,
+                        'autoCargoUpper': 0,
+                        'teleopCargoLower': 0,
+                        'teleopCargoUpper': 0,
+                        'taxi': 0,
                         'climb': 0,
-                        'rung_level': 0,
+                        'penalty': 0,
                         'opr': 0,
                         'oprp': 0
                       };
@@ -404,41 +393,33 @@ function switchTab(color) {
             }
             score += result.oprp;
             autoHtml += autoTemplateHtml.replace(/{{team}}/g, teams[team])
-                                          .replace(/{{auto_low}}/g, result.autoCellsBottom.toFixed(1))
-                                          .replace(/{{auto_outer}}/g, result.autoCellsOuter.toFixed(1))
-                                          .replace(/{{auto_inner}}/g, result.autoCellsInner.toFixed(1));
+                                          .replace(/{{auto_lower}}/g, result.autoCargoLower.toFixed(1))
+                                          .replace(/{{auto_upper}}/g, result.autoCargoUpper.toFixed(1))
             teleopHtml += teleopTemplateHtml.replace(/{{team}}/g, teams[team])
-                                          .replace(/{{teleop_low}}/g, result.teleopCellsBottom.toFixed(1))
-                                          .replace(/{{teleop_outer}}/g, result.teleopCellsOuter.toFixed(1))
-                                          .replace(/{{teleop_inner}}/g, result.teleopCellsInner.toFixed(1));
+                                          .replace(/{{teleop_lower}}/g, result.teleopCargoLower.toFixed(1))
+                                          .replace(/{{teleop_upper}}/g, result.teleopCargoUpper.toFixed(1))
             overallHtml += overallTemplateHtml.replace(/{{team}}/g, teams[team])
                                           .replace(/{{oprp}}/g, result.oprp.toFixed(1))
-                                          .replace(/{{start}}/g, result.move.toFixed(1))
-                                          .replace(/{{end}}/g, result.climb.toFixed(1))
-                                          .replace(/{{rung_level}}/g, result.rung_level.toFixed(1))
+                                          .replace(/{{taxi}}/g, result.taxi.toFixed(1))
+                                          .replace(/{{climb}}/g, result.climb.toFixed(1))
+                                          .replace(/{{penalty}}/g, -result.penalty.toFixed(1))
                                           .replace(/{{auto}}/g,
-                                                    (result.autoCellsBottom +
-                                                     result.autoCellsInner +
-                                                     result.autoCellsOuter).toFixed(1))
+                                                    (result.autoCargoLower * 2 +
+                                                     result.autoCargoUpper * 4).toFixed(1))
                                           .replace(/{{teleop}}/g,
-                                                    (result.teleopCellsInner +
-                                                     result.teleopCellsOuter +
-                                                     result.teleopCellsBottom).toFixed(1));
-            teamDataset[0].data.push(result.move.toFixed(1));
-            teamDataset[1].data.push((result.autoCellsBottom +
-                                      result.autoCellsInner +
-                                      result.autoCellsOuter).toFixed(1));
-            teamDataset[2].data.push((result.teleopCellsInner +
-                                      result.teleopCellsOuter +
-                                      result.teleopCellsBottom).toFixed(1));
+                                                    (result.teleopCargoLower +
+                                                     result.teleopCargoUpper * 2).toFixed(1));
+            teamDataset[0].data.push(result.taxi.toFixed(1));
+            teamDataset[1].data.push((result.autoCargoLower +
+                                      result.autoCargoUpper).toFixed(1));
+            teamDataset[2].data.push((result.teleopCargoUpper +
+                                      result.teleopCargoLower).toFixed(1));
             teamDataset[3].data.push(result.climb.toFixed(1));
-            teamDataset[4].data.push(result.rung_level.toFixed(1));
-            autoDataset[0].data.push(result.autoCellsBottom.toFixed(1));
-            autoDataset[1].data.push(result.autoCellsOuter.toFixed(1));
-            autoDataset[2].data.push(result.autoCellsInner.toFixed(1));
-            teleopDataset[0].data.push(result.teleopCellsBottom.toFixed(1));
-            teleopDataset[1].data.push(result.teleopCellsOuter.toFixed(1));
-            teleopDataset[2].data.push(result.teleopCellsInner.toFixed(1));
+            teamDataset[4].data.push(result.penalty.toFixed(1));
+            autoDataset[0].data.push(result.autoCargoLower.toFixed(1));
+            autoDataset[1].data.push(result.autoCargoUpper.toFixed(1));
+            teleopDataset[0].data.push(result.teleopCargoLower.toFixed(1));
+            teleopDataset[1].data.push(result.teleopCargoUpper.toFixed(1));
           }
 
           // Fill div
@@ -464,13 +445,13 @@ function switchTab(color) {
               options: {
                   title: {
                       display: true,
-                      text: 'Overall'
+                      text: 'Overall Pts'
                   },
                   scales: {
                       xAxes: [{ stacked: true }],
                       yAxes: [{
                           ticks: {
-                              suggestedMax: 25,
+                              suggestedMax: 50,
                               beginAtZero: true
                           },
                           stacked: true
@@ -489,13 +470,13 @@ function switchTab(color) {
               options: {
                   title: {
                       display: true,
-                      text: 'Auto Cells'
+                      text: 'Auto Cargo'
                   },
                   scales: {
                       xAxes: [{ stacked: true }],
                       yAxes: [{
                           ticks: {
-                              suggestedMax: 10,
+                              suggestedMax: 6,
                               beginAtZero: true
                           },
                           stacked: true
@@ -514,13 +495,13 @@ function switchTab(color) {
               options: {
                   title: {
                       display: true,
-                      text: 'Teleop Cells'
+                      text: 'Teleop Cargo'
                   },
                   scales: {
                       xAxes: [{ stacked: true }],
                       yAxes: [{
                           ticks: {
-                              suggestedMax: 10,
+                              suggestedMax: 15,
                               beginAtZero: true
                           },
                           stacked: true

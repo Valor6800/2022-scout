@@ -1,6 +1,9 @@
 var TBA = require('./src/tba.js');
 var tba = new TBA();
 
+var TBA_Generator = require('./src/tba_generator.js');
+var gen = new TBA_Generator();
+
 // Year + 4 digit event code
 // var eventCode = "2019miket";
 // Team codes have "frc" in front of the number
@@ -75,8 +78,6 @@ tba.getNextMatch(eventCode, function(last_match) {
 //     }
 // })
 
-
-tba.genOPRs('2021txcls', function(oprs) {
-	console.log(oprs);
-	// tba.genCSV(results, '2019txpas_prescout_elims');
+tba.genOPRs('2022mray', function(oprs) {
+	// console.log(oprs);
 }, true);

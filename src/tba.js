@@ -20,12 +20,25 @@
             throw new Error('Requires math');
         }
     }
+    var TBA_Generator = root.TBA_Generator;
+    if (typeof TBA_Generator === 'undefined') {
+        if (has_require) {
+            TBA_Generator = require('./tba_generator.js');
+        } else {
+            throw new Error('Requires TBA_Generator');
+        }
+    }
 
     class TBA {
 
+        test()
+        {
+            console.log('test tba');
+        }
+
         constructor()
         {
-            this.year = '2020';
+            this.year = '2022';
             this.tba_base_url = 'https://www.thebluealliance.com/api/v3/';
             this.tba_auth_token = 'LCBZ7qqYrBR0e06C4QJEjaW1O7r2TZat7KZwvQcfDqShwIxV4N7epHK9lbafjc4M';
             this.component_opr_2019_keys = [
@@ -56,7 +69,39 @@
                 'rung_level',
                 'panel'
             ];
-            this.component_opr_keys = this.component_opr_2020_keys;
+            this.component_opr_2022_keys = [
+                'autoCargoLower',
+                'autoCargoUpper',
+                'teleopCargoLower',
+                'teleopCargoUpper',
+                'quintet',
+                'taxi',
+                'climb',
+                'penalty'
+            ];
+            this.component_opr_keys = this.component_opr_2022_keys;
+            this.foul_idx = this.component_opr_keys.length - 1;
+
+            this.cargo_tracking = [
+                'autoCargoLowerNear',
+                'autoCargoLowerFar',
+                'autoCargoLowerBlue',
+                'autoCargoLowerRed',
+                'autoCargoUpperNear',
+                'autoCargoUpperFar',
+                'autoCargoUpperBlue',
+                'autoCargoUpperRed',
+                'teleopCargoLowerNear',
+                'teleopCargoLowerFar',
+                'teleopCargoLowerBlue',
+                'teleopCargoLowerRed',
+                'teleopCargoUpperNear',
+                'teleopCargoUpperFar',
+                'teleopCargoUpperBlue',
+                'teleopCargoUpperRed'
+            ];
+
+            this.gen = new TBA_Generator();
         }
 
         /**
@@ -119,7 +164,10 @@
 
         getMatches(code, callback)
         {
-            this.httpGet('event/' + code + '/matches', callback);
+            if (code == '2022mray')
+                callback(this.gen.genTournament(34, 10));
+            else
+                this.httpGet('event/' + code + '/matches', callback);
         }
 
         getOPRs(code, callback)
@@ -188,20 +236,26 @@
             this.httpGet('team/' + team_code + '/events/' + this.year + '/statuses', callback);
         }
 
-        getOverallTeamNextMatch(team_code, callback)
+        getOverallTeamNextMatch(team_code, callback, simulated=false)
         {
-            var that = this;
-            that.getTeamEvents(team_code, function (events) {
-                for (var event in events) {
-                    if (events[event]) {
-                        if (events[event].next_match_key) {
-                            that.getMatch(events[event].next_match_key, callback);
-                            return;
+
+            if (simulated) {
+                let teams = {'red': [team_code, 'frc6800', 'frc27'], 'blue': ['frc49', 'frc1717', 'frc330']};
+                callback(this.gen.genMatch(this.gen.rnd(60) + 1, teams));
+            } else {
+                var that = this;
+                that.getTeamEvents(team_code, function (events) {
+                    for (var event in events) {
+                        if (events[event]) {
+                            if (events[event].next_match_key) {
+                                that.getMatch(events[event].next_match_key, callback);
+                                return;
+                            }
                         }
                     }
-                }
-                callback(null);
-            });
+                    callback(null);
+                });
+            }
         }
 
         getOverallTeamLastMatch(team_code, callback)
@@ -261,14 +315,13 @@
             let colors = ['blue', 'red'];
             let fouls = [0, 0];
             for (var color in colors) {
-                // let sums = this.parse2019Match(match[colors[color]]);
-                let sums = this.parse2020Match(match[colors[color]]);
+                let sums = this.parse2022Match(match[colors[color]]);
                 for (var i = 0; i < 3; i++) {
                     var robot = parseInt(complete_match_data.alliances[colors[color]].team_keys[i].replace('frc', ''));
                     if (!(robot in results))
                         results[robot] = {};
                     for (var j = 0; j < this.component_opr_keys.length; j++) {
-                        if (j === 8) {
+                        if (j === this.foul_idx) {
                             fouls[1 - color] = sums[this.component_opr_keys[j]];
                         } else {
                             results[robot][this.component_opr_keys[j]] = sums[this.component_opr_keys[j]];
@@ -284,7 +337,7 @@
             for (var color in colors) {
                 for (var i = 0; i < 3; i++) {
                     var robot = parseInt(complete_match_data.alliances[colors[color]].team_keys[i].replace('frc', ''));
-                    results[robot][this.component_opr_keys[8]] = fouls[color];
+                    results[robot][this.component_opr_keys[this.foul_idx]] = fouls[color];
                 }
             }
             return results;
@@ -316,8 +369,7 @@
         genOPRs(eventCode, callback, gen_csv = false)
         {
             this.getMatches(eventCode, function(matches) {
-                console.log(matches)
-		var results = {};
+                var results = {};
                 if (matches.length == 0) {
                     callback(null);
                     return null;
@@ -411,10 +463,12 @@
                 var oprs = {};
                 var i = 0;
                 for (var team in results) {
+                    if (team == 0)
+                        continue;
                     oprs[team] = {'opr': 0, 'oprp': 0};
                     for (var j = 0; j < this.component_opr_keys.length; j++) {
                         oprs[team][this.component_opr_keys[j]] = opr_arrays[this.component_opr_keys[j]][i][0];
-                        if (j === 8) {
+                        if (j === this.foul_idx) {
                             oprs[team].oprp -= oprs[team][this.component_opr_keys[j]];
                         } else {
                             oprs[team].opr += oprs[team][this.component_opr_keys[j]];
@@ -428,6 +482,54 @@
                 else
                     callback(oprs);
             }.bind(this));
+        }
+
+        parse2022Cargo(color, match)
+        {
+            let sums = {};
+            for (var i = 0; i < this.cargo_tracking.length; i++) {
+                sums[this.cargo_tracking[i]] = {'red': 0, 'blue': 0};
+            }
+        }
+
+        parse2022Match(match)
+        {
+            let sums = {};
+            for (var i = 0; i < this.component_opr_keys.length; i++) {
+                sums[this.component_opr_keys[i]] = 0;
+            }
+
+            sums[this.component_opr_keys[0]] = match['autoCargoLowerNear'] +
+                                               match['autoCargoLowerFar'] +
+                                               match['autoCargoLowerBlue'] +
+                                               match['autoCargoLowerRed'];
+            sums[this.component_opr_keys[1]] = match['autoCargoUpperNear'] +
+                                               match['autoCargoUpperFar'] +
+                                               match['autoCargoUpperBlue'] +
+                                               match['autoCargoUpperRed'];
+            sums[this.component_opr_keys[2]] = match['teleopCargoLowerNear'] +
+                                               match['teleopCargoLowerFar'] +
+                                               match['teleopCargoLowerBlue'] +
+                                               match['teleopCargoLowerRed'];
+            sums[this.component_opr_keys[3]] = match['teleopCargoUpperNear'] +
+                                               match['teleopCargoUpperFar'] +
+                                               match['teleopCargoUpperBlue'] +
+                                               match['teleopCargoUpperRed'];
+
+            // Hab game element
+            for (var i = 1; i <= 3; i++) {
+                sums[this.component_opr_keys[5]] += match['taxiRobot' + i] === 'Yes' ? 2 : 0;
+                sums[this.component_opr_keys[6]] += match['endgameRobot' + i] === 'Traversal' ? 15 :
+                                                   (match['endgameRobot' + i] === 'High' ? 10 :
+                                                   (match['endgameRobot' + i] === 'Mid' ? 6 :
+                                                   (match['endgameRobot' + i] === 'Low' ? 4 : 0)));
+            }
+
+            // Foul points
+            sums[this.component_opr_keys[this.foul_idx]] += match['foulPoints'];
+
+            // Return element sum array
+            return sums;
         }
 
         parse2020Match(match)
