@@ -50,7 +50,7 @@
       <!-- Container for the item content viewer -->
       <div class="w3-justify w3-card w3-white" id="regional_details">
         <header class="w3-container viper-black-no-hover">
-          <h3>Team <span id="team_number"></span> - General Stats</h3>
+          <h3>Team <span id="team_number"></span> - General OPR</h3>
         </header>
 
         <!-- OPR table -->
@@ -65,10 +65,24 @@
 
       <hr>
 
+      <!-- Container for the item content viewer -->
+      <div class="w3-justify w3-card w3-white" id="cargo_details">
+        <header class="w3-container viper-black-no-hover">
+          <h3>Cargo OPR</h3>
+        </header>
+
+        <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="cargo_table">
+        <!--Generated items will go here-->
+        </table>
+
+      </div>
+
+      <hr>
+
       <!-- Container for the cargo breakdown content viewer -->
       <div class="w3-justify w3-card w3-white" id="cargo_lower_breakdown">
         <header class="w3-container viper-black-no-hover">
-          <h3>Lower Cargo Breakdown</h3>
+          <h3>Lower Cargo Exit Breakdown</h3>
         </header>
         <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="cargo_lower_table">
         </table>
@@ -79,7 +93,7 @@
       <!-- Container for the cargo breakdown content viewer -->
       <div class="w3-justify w3-card w3-white" id="cargo_upper_breakdown">
         <header class="w3-container viper-black-no-hover">
-          <h3>Upper Cargo Breakdown</h3>
+          <h3>Upper Cargo Exit Breakdown</h3>
         </header>
         <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="cargo_upper_table">
         </table>
@@ -199,12 +213,17 @@
         <td>Taxi</td>
         <td>Climb</td>
         <td>Auto Cargo</td>
-        <td>Auto Cargo Upper</td>
-        <td>Auto Cargo Lower</td>
         <td>Teleop Cargo</td>
-        <td>Teleop Cargo Upper</td>
-        <td>Teleop Cargo Lower</td>
         <td>Penalty</td>
+    </thead>
+</script>
+
+<script id="opr-special-header-table" type="text/template">
+    <thead class="viper-grey">
+        <td>Mode</td>
+        <td>Cargo</td>
+        <td>Cargo Upper</td>
+        <td>Cargo Lower</td>
     </thead>
 </script>
 
@@ -215,12 +234,29 @@
         <td>{{taxi}}</td>
         <td>{{climb}}</td>
         <td>{{auto}}</td>
+        <td>{{teleop}}</td>
+        <td>{{penalty}}</td>
+    </tr>
+</script>
+
+<script id="opr-special-template-table-entry" type="text/template">
+    <tr class="table_entry" >
+        <td>Auto</td>
+        <td>{{auto}}</td>
         <td>{{autoCargoUpper}}</td>
         <td>{{autoCargoLower}}</td>
+    </tr>
+    <tr class="table_entry" >
+        <td>Teleop</td>
         <td>{{teleop}}</td>
         <td>{{teleopCargoUpper}}</td>
         <td>{{teleopCargoLower}}</td>
-        <td>{{penalty}}</td>
+    </tr>
+    <tr class="table_entry" >
+        <td>Total</td>
+        <td>{{total}}</td>
+        <td>{{totalCargoUpper}}</td>
+        <td>{{totalCargoLower}}</td>
     </tr>
 </script>
 
@@ -248,10 +284,14 @@
 
         // Cache of the template
         var OPRheader = document.getElementById("opr-header-table");
+        var OPRSpecialHeader = document.getElementById("opr-special-header-table");
         var OPRtemplate = document.getElementById("opr-template-table-entry");
+        var OPRSpecialTemplate = document.getElementById("opr-special-template-table-entry");
         // Get the contents of the template
         var OPRHeaderHtml = OPRheader.innerHTML;
         var OPRTemplateHtml = OPRtemplate.innerHTML;
+        var OPRSpecialHeaderHtml = OPRSpecialHeader.innerHTML;
+        var OPRSpecialTemplateHtml = OPRSpecialTemplate.innerHTML;
 
         var Cargoheader = document.getElementById("cargo-header-table");
         var CargoLowerTemplate = document.getElementById("cargo-lower-template-table-entry");
@@ -263,18 +303,25 @@
 
         if (results) {
             // Final HTML variable as empty string
-            var listHtml = OPRHeaderHtml;
-            listHtml += OPRTemplateHtml.replace(/{{opr}}/g, results[team].opr.toFixed(2))
+            var oprHtml = OPRHeaderHtml;
+            var oprSpecialHtml = OPRSpecialHeaderHtml;
+            oprHtml += OPRTemplateHtml.replace(/{{opr}}/g, results[team].opr.toFixed(2))
                                   .replace(/{{oprp}}/g, results[team].oprp.toFixed(2))
                                   .replace(/{{taxi}}/g, results[team].taxi.toFixed(2))
                                   .replace(/{{climb}}/g, results[team].climb.toFixed(2))
                                   .replace(/{{auto}}/g, (results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
+                                  .replace(/{{teleop}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower).toFixed(2))
+                                  .replace(/{{penalty}}/g, results[team].penalty.toFixed(2))
+
+            oprSpecialHtml += OPRSpecialTemplateHtml.replace(/{{auto}}/g, (results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
                                   .replace(/{{autoCargoUpper}}/g, results[team].autoCargoUpper.toFixed(2))
                                   .replace(/{{autoCargoLower}}/g, results[team].autoCargoLower.toFixed(2))
                                   .replace(/{{teleop}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower).toFixed(2))
                                   .replace(/{{teleopCargoUpper}}/g, results[team].teleopCargoUpper.toFixed(2))
                                   .replace(/{{teleopCargoLower}}/g, results[team].teleopCargoLower.toFixed(2))
-                                  .replace(/{{penalty}}/g, results[team].penalty.toFixed(2))
+                                  .replace(/{{total}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower + results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
+                                  .replace(/{{totalCargoUpper}}/g, (results[team].teleopCargoUpper + results[team].autoCargoUpper).toFixed(2))
+                                  .replace(/{{totalCargoLower}}/g, (results[team].teleopCargoLower + results[team].autoCargoLower).toFixed(2))
 
             var cargoLowerHtml = CargoHeaderHtml;
             var cargoUpperHtml = CargoHeaderHtml;
@@ -306,7 +353,8 @@
                                                     .replace(/{{totalUpperRight}}/g, results[team].teleopUpperRight + results[team].autoUpperRight)
 
             // Replace the HTML of #list with final HTML
-            document.getElementById("opr_table").innerHTML = listHtml;
+            document.getElementById("opr_table").innerHTML = oprHtml;
+            document.getElementById("cargo_table").innerHTML = oprSpecialHtml;
             document.getElementById("cargo_lower_table").innerHTML = cargoLowerHtml;
             document.getElementById("cargo_upper_table").innerHTML = cargoUpperHtml;
             sorttable.makeSortable(document.getElementById("opr_table"));
