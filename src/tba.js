@@ -29,19 +29,45 @@
         }
     }
 
-    /** Class representing a TBA. */
+    /**
+     * Class to pull data from TBA (thebluealliance), as well as calculate component OPRs from resulting data
+     * @author Michael Ray <mray190@gmail.com>
+     */
     class TBA {
 
-        test()
+        setYear(year=2022)
         {
-            console.log('test tba');
+            this.year = year;
         }
 
+        setAuthToken(token)
+        {
+            this.tba_auth_token = token;
+        }
+
+        /**
+         * @constructor
+         */
         constructor()
         {
+            /**
+             * @private
+             */
             this.year = '2022';
+
+            /**
+             * @private
+             */
             this.tba_base_url = 'https://www.thebluealliance.com/api/v3/';
+
+            /**
+             * @private
+             */
             this.tba_auth_token = 'LCBZ7qqYrBR0e06C4QJEjaW1O7r2TZat7KZwvQcfDqShwIxV4N7epHK9lbafjc4M';
+
+            /**
+             * @private
+             */
             this.component_opr_2019_keys = [
                 'HatchRocketLow',
                 'HatchRocketMid',
@@ -57,6 +83,10 @@
                 'HabEnd',
                 'Penalty'
             ];
+
+            /**
+             * @private
+             */
             this.component_opr_2020_keys = [
                 'autoCellsBottom',
                 'autoCellsInner',
@@ -70,6 +100,10 @@
                 'rung_level',
                 'panel'
             ];
+
+            /**
+             * @private
+             */
             this.component_opr_2022_keys = [
                 'autoCargoLower',
                 'autoCargoUpper',
@@ -80,9 +114,20 @@
                 'climb',
                 'penalty'
             ];
+
+            /**
+             * @private
+             */
             this.component_opr_keys = this.component_opr_2022_keys;
+
+            /**
+             * @private
+             */
             this.foul_idx = this.component_opr_keys.length - 1;
 
+            /**
+             * @private
+             */
             this.cargo_tracking = [
                 'autoCargoLowerNear',
                 'autoCargoLowerFar',
@@ -102,14 +147,24 @@
                 'teleopCargoUpperRed'
             ];
 
+            /**
+             * @private
+             */
             this.gen = new TBA_Generator();
         }
+
+        /**
+         * This callback is displayed as part of the Requester class.
+         * @callback TBA~TBAResponseCallback
+         * @param {number} responseCode
+         * @param {string} responseMessage
+         */
 
         /**
          * Get data from TheBlueAlliance
          * @private
          * @param {String} url - URL extension for TBA
-         * @param {TBAResponseCallback} callback - Callback when data is acquired
+         * @param {TBA~TBAResponseCallback} callback - Callback when data is acquired
          */
         httpGet(url, callback)
         {
@@ -136,7 +191,7 @@
         /**
          * Get a list of teams at an event
          * @param {String} code - event code
-         * @param {TBAResponseCallback} callback - Callback when data is acquired
+         * @param {TBA~TBAResponseCallback} callback - Callback when data is acquired
          */
         getEvent(code, callback)
         {
@@ -146,7 +201,7 @@
         /**
          * Get a list of teams at an event
          * @param {String} code - event code
-         * @param {TBAResponseCallback} callback - Callback when data is acquired
+         * @param {TBA~TBAResponseCallback} callback - Callback when data is acquired
          */
         getTeams(code, callback)
         {
@@ -156,7 +211,7 @@
         /**
          * Get a specific match
          * @param {String} match_code - match code
-         * @param {TBAResponseCallback} callback - Callback when data is acquired
+         * @param {TBA~TBAResponseCallback} callback - Callback when data is acquired
          */
         getMatch(match_code, callback)
         {
@@ -308,7 +363,7 @@
 
         // Internal helper functions (generic)
 
-        parseMatch(complete_match_data)
+        parseMatch(complete_match_data, ballCounts)
         {
             var results = {};
             var match = complete_match_data.score_breakdown;
@@ -319,8 +374,11 @@
                 let sums = this.parse2022Match(match[colors[color]]);
                 for (var i = 0; i < 3; i++) {
                     var robot = parseInt(complete_match_data.alliances[colors[color]].team_keys[i].replace('frc', ''));
-                    if (!(robot in results))
+                    if (!(robot in results)) {
                         results[robot] = {};
+                        ballCounts[robot] = {};
+                    }
+                    this.parse2022CargoExits(colors[color], match, ballCounts[robot]);
                     for (var j = 0; j < this.component_opr_keys.length; j++) {
                         if (j === this.foul_idx) {
                             fouls[1 - color] = sums[this.component_opr_keys[j]];
@@ -354,6 +412,16 @@
             for (var j = 0; j < this.component_opr_keys.length; j++) {
                 process.stdout.write(this.component_opr_keys[j] + ",");
             }
+            let modes = ['auto', 'teleop'];
+            let zones = ['Lower', 'Upper'];
+            let outputs = ['Front', 'Back', 'Left', 'Right'];
+            for (var mode = 0; mode < modes.length; mode++) {
+                for (var zone = 0; zone < zones.length; zone++) {
+                    for (var output = 0; output < outputs.length; output++) {
+                        process.stdout.write(modes[mode] + zones[zone] + outputs[output] + ",");
+                    }
+                }
+            }
             process.stdout.write("\n");
             for (var team in oprs) {
                 process.stdout.write(team + ",");
@@ -367,6 +435,24 @@
                 callback(oprs);
         }
 
+        fillBallCounts(oprs, ballCounts)
+        {
+            let modes = ['auto', 'teleop'];
+            let zones = ['Lower', 'Upper'];
+            let outputs = ['Front', 'Back', 'Left', 'Right'];
+            for (const [team, value] of Object.entries(ballCounts)) {
+                if (team != 0) {
+                    for (var mode = 0; mode < modes.length; mode++) {
+                        for (var zone = 0; zone < zones.length; zone++) {
+                            for (var output = 0; output < outputs.length; output++) {
+                                oprs[team][modes[mode] + zones[zone] + outputs[output]] = ballCounts[team][modes[mode]][zones[zone]][outputs[output]];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         genOPRs(eventCode, callback, gen_csv = false)
         {
             this.getMatches(eventCode, function(matches) {
@@ -375,10 +461,11 @@
                     callback(null);
                     return null;
                 }
+                let ballCounts = {};
                 for (var match in matches) {
                     if (matches[match].actual_time && (
                         matches[match].comp_level === 'qm')) {
-                        var parsed_match = this.parseMatch(matches[match]);
+                        var parsed_match = this.parseMatch(matches[match], ballCounts);
                         for (var team in parsed_match) {
 
                             // Initialize entrys
@@ -478,6 +565,7 @@
                     }
                     i++;
                 }
+                this.fillBallCounts(oprs,ballCounts);
                 if (gen_csv)
                     this.genCSV(oprs, callback);
                 else
@@ -490,6 +578,32 @@
             let sums = {};
             for (var i = 0; i < this.cargo_tracking.length; i++) {
                 sums[this.cargo_tracking[i]] = {'red': 0, 'blue': 0};
+            }
+        }
+
+        parse2022CargoExits(color, match, ballCountsForTeam)
+        {
+            let modes = ['auto', 'teleop'];
+            let zones = ['Lower', 'Upper'];
+            for (var mode = 0; mode < modes.length; mode++) {
+                if (!(modes[mode] in ballCountsForTeam))
+                    ballCountsForTeam[modes[mode]] = {};
+                for (var zone = 0; zone < zones.length; zone++) {
+                    if (!(zones[zone] in ballCountsForTeam[modes[mode]]))
+                        ballCountsForTeam[modes[mode]][zones[zone]] = {
+                            'Front': 0,
+                            'Back': 0,
+                            'Left': 0,
+                            'Right': 0
+                        };
+                    let key = modes[mode] + 'Cargo' + zones[zone];
+                    let matchColor = match[color];
+
+                    ballCountsForTeam[modes[mode]][zones[zone]]['Front'] += matchColor[key + (color == 'red' ? 'Red' : 'Blue')];
+                    ballCountsForTeam[modes[mode]][zones[zone]]['Back'] += matchColor[key + (color == 'red' ? 'Blue' : 'Red')];
+                    ballCountsForTeam[modes[mode]][zones[zone]]['Left'] += matchColor[key + (color == 'red' ? 'Near' : 'Far')];
+                    ballCountsForTeam[modes[mode]][zones[zone]]['Right'] += matchColor[key + (color == 'red' ? 'Far' : 'Near')];
+                }
             }
         }
 

@@ -8,7 +8,7 @@
     "scripts": {
         "start": "node app.js",
         "pack": "browserify src/tba.js --standalone TBA -o dist/min.tba.js && browserify src/tba_generator.js --standalone TBA_Generator -o dist/min.tba_generator.js",
-        "docs": "jsdoc -r src -d ./docs -c .jsdoc.conf"
+        "docs": "jsdoc -r src --readme README.md -d ./docs -c .jsdoc.conf"
     },
     "author": "Michael Ray",
     "dependencies": {

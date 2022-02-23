@@ -34,7 +34,7 @@
         <ul></ul>
     </div>
     
-    <div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="TBA.html">TBA</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TBA_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="TBA.html#getEvent">getEvent</a></li><li><a href="TBA.html#getMatch">getMatch</a></li><li><a href="TBA.html#getTeams">getTeams</a></li></ul></div></li><li><a href="TBA_Generator.html">TBA_Generator</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TBA_Generator_sub"></div></li></ul></div>
+    <div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="TBA.html">TBA</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TBA_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="TBA.html#getEvent">getEvent</a></li><li><a href="TBA.html#getMatch">getMatch</a></li><li><a href="TBA.html#getTeams">getTeams</a></li></ul><div class="member-type">Typedef</div><ul class="inner"><li><a href="TBA.html#~TBAResponseCallback">TBAResponseCallback</a></li></ul></div></li><li><a href="TBA_Generator.html">TBA_Generator</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TBA_Generator_sub"></div></li></ul></div>
 </nav>
 <div id="resizer"></div>
 
@@ -77,19 +77,45 @@
         }
     }
 
-    /** Class representing a TBA. */
+    /**
+     * Class to pull data from TBA (thebluealliance), as well as calculate component OPRs from resulting data
+     * @author Michael Ray &lt;mray190@gmail.com>
+     */
     class TBA {
 
-        test()
+        setYear(year=2022)
         {
-            console.log('test tba');
+            this.year = year;
         }
 
+        setAuthToken(token)
+        {
+            this.tba_auth_token = token;
+        }
+
+        /**
+         * @constructor
+         */
         constructor()
         {
+            /**
+             * @private
+             */
             this.year = '2022';
+
+            /**
+             * @private
+             */
             this.tba_base_url = 'https://www.thebluealliance.com/api/v3/';
+
+            /**
+             * @private
+             */
             this.tba_auth_token = 'LCBZ7qqYrBR0e06C4QJEjaW1O7r2TZat7KZwvQcfDqShwIxV4N7epHK9lbafjc4M';
+
+            /**
+             * @private
+             */
             this.component_opr_2019_keys = [
                 'HatchRocketLow',
                 'HatchRocketMid',
@@ -105,6 +131,10 @@
                 'HabEnd',
                 'Penalty'
             ];
+
+            /**
+             * @private
+             */
             this.component_opr_2020_keys = [
                 'autoCellsBottom',
                 'autoCellsInner',
@@ -118,6 +148,10 @@
                 'rung_level',
                 'panel'
             ];
+
+            /**
+             * @private
+             */
             this.component_opr_2022_keys = [
                 'autoCargoLower',
                 'autoCargoUpper',
@@ -128,9 +162,20 @@
                 'climb',
                 'penalty'
             ];
+
+            /**
+             * @private
+             */
             this.component_opr_keys = this.component_opr_2022_keys;
+
+            /**
+             * @private
+             */
             this.foul_idx = this.component_opr_keys.length - 1;
 
+            /**
+             * @private
+             */
             this.cargo_tracking = [
                 'autoCargoLowerNear',
                 'autoCargoLowerFar',
@@ -150,14 +195,24 @@
                 'teleopCargoUpperRed'
             ];
 
+            /**
+             * @private
+             */
             this.gen = new TBA_Generator();
         }
+
+        /**
+         * This callback is displayed as part of the Requester class.
+         * @callback TBA~TBAResponseCallback
+         * @param {number} responseCode
+         * @param {string} responseMessage
+         */
 
         /**
          * Get data from TheBlueAlliance
          * @private
          * @param {String} url - URL extension for TBA
-         * @param {TBAResponseCallback} callback - Callback when data is acquired
+         * @param {TBA~TBAResponseCallback} callback - Callback when data is acquired
          */
         httpGet(url, callback)
         {
@@ -184,7 +239,7 @@
         /**
          * Get a list of teams at an event
          * @param {String} code - event code
-         * @param {TBAResponseCallback} callback - Callback when data is acquired
+         * @param {TBA~TBAResponseCallback} callback - Callback when data is acquired
          */
         getEvent(code, callback)
         {
@@ -194,7 +249,7 @@
         /**
          * Get a list of teams at an event
          * @param {String} code - event code
-         * @param {TBAResponseCallback} callback - Callback when data is acquired
+         * @param {TBA~TBAResponseCallback} callback - Callback when data is acquired
          */
         getTeams(code, callback)
         {
@@ -204,7 +259,7 @@
         /**
          * Get a specific match
          * @param {String} match_code - match code
-         * @param {TBAResponseCallback} callback - Callback when data is acquired
+         * @param {TBA~TBAResponseCallback} callback - Callback when data is acquired
          */
         getMatch(match_code, callback)
         {

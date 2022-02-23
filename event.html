@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>ViperScout</title>
+    <title>Valor Scout</title>
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" type="text/css" href="./styles.css">
@@ -26,8 +26,8 @@
     <!-- Navbar on small screens (Hidden on medium and large screens) -->
     <div class="w3-top w3-light-grey w3-hide-large w3-hide-medium" id="myNavbar">
       <div class="w3-bar w3-center w3-large">
-        <a href="index.html" class="w3-bar-item w3-button w3-light-grey" style="width:25% !important" id="home_button"><i class="fa fa-home" alt="Home"></i></a>
-        <a href="all.html" class="w3-bar-item w3-button w3-grey" style="width:25% !important">All</a>
+        <a href="index.html" class="w3-bar-item w3-button w3-grey" style="width:25% !important" id="home_button"><i class="fa fa-home" alt="Home"></i></a>
+        <a href="all.html" class="w3-bar-item w3-button w3-light-grey" style="width:25% !important">All</a>
         <a href="prediction.html" class="w3-bar-item w3-button w3-light-grey" style="width:25% !important">Predict</a>
       </div>
     </div>
@@ -49,11 +49,17 @@
 
       <!-- Container for the item content viewer -->
       <div class="w3-justify w3-card w3-white" id="regional_details">
+        <header class="w3-container viper-black-no-hover">
+          <h3><span id="regional_detail_name"></span></h3>
+        </header>
 
         <!-- OPR table -->
         <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="opr_table">
         <!--Generated items will go here-->
         </table>
+
+        <div id="opr_error">
+        </div>
 
       </div>
 
@@ -65,23 +71,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.6.0/math.js"></script>
     <script type="text/javascript" src="dist/scripts.js"></script>
     <script src="./dist/min.tba.js"></script>
+    <script src="./dist/min.tba_generator.js"></script>
   </body>
-
-<script id="reg-header-table" type="text/template">
-    <thead class="viper-grey">
-        <th>Name</th>
-        <th>Location</th>
-        <th>Code</th>
-    </thead>
-</script>
-
-<script id="reg-template-table-entry" type="text/template">
-    <tr class="table_entry" id="{{name}}">
-      <td class="table_entry_name" id="{{name}}">{{name}}</td>
-      <td class="table_entry_location" id="{{location}}">{{location}}</td>
-      <td class="table_entry_code" id="{{code}}">{{code}}</td>
-    </tr>
-</script>
 
 <script id="opr-header-table" type="text/template">
     <thead class="viper-grey">
@@ -90,7 +81,6 @@
         <td>OPRP</td>
         <td>Taxi</td>
         <td>Climb</td>
-        <td>Quintet</td>
         <td>Auto Cargo</td>
         <td>Auto Cargo Upper</td>
         <td>Auto Cargo Lower</td>
@@ -98,17 +88,18 @@
         <td>Teleop Cargo Upper</td>
         <td>Teleop Cargo Lower</td>
         <td>Penalty</td>
+        <td>Cargo Breakdown</td>
+        <td>Match Prediction</td>
     </thead>
 </script>
 
 <script id="opr-template-table-entry" type="text/template">
     <tr class="table_entry" >
-        <td><a href="{{url}}">{{team}}</a></td>
+        <td>{{team}}</td>
         <td>{{opr}}</td>
         <td>{{oprp}}</td>
         <td>{{taxi}}</td>
         <td>{{climb}}</td>
-        <td>{{quintet}}</td>
         <td>{{auto}}</td>
         <td>{{autoCargoUpper}}</td>
         <td>{{autoCargoLower}}</td>
@@ -116,64 +107,78 @@
         <td>{{teleopCargoUpper}}</td>
         <td>{{teleopCargoLower}}</td>
         <td>{{penalty}}</td>
+        <td><button onclick="matchBreakdown({{team}})">Cargo Breakdown</button></td>
+        <td><button onclick="nextMatch({{team}})">Next Match</button></td>
     </tr>
 </script>
 
 <script>
     
-  $('#getStartedClose').on('click', function() {
-      $('#questions_alert').hide();
-      Cookies.set('getStartedClose', true, { expires: 365 });
-  });
-  
-  $('#questions_button').on('click', function() {
-    $("#questions_alert").show();
-  });
-  var tba = new TBA();
-  tba.setYear('2022');
-  tba.setAuthToken('LCBZ7qqYrBR0e06C4QJEjaW1O7r2TZat7KZwvQcfDqShwIxV4N7epHK9lbafjc4M');
+    $('#getStartedClose').on('click', function() {
+        $('#questions_alert').hide();
+        Cookies.set('getStartedClose', true, { expires: 365 });
+    });
+    
+    $('#questions_button').on('click', function() {
+      $("#questions_alert").show();
+    });
+    var tba = new TBA();
+    tba.setYear('2022');
+    tba.setAuthToken('LCBZ7qqYrBR0e06C4QJEjaW1O7r2TZat7KZwvQcfDqShwIxV4N7epHK9lbafjc4M');
 
-  // Cache of the template
-  var OPRheader = document.getElementById("opr-header-table");
-  var OPRtemplate = document.getElementById("opr-template-table-entry");
-  // Get the contents of the template
-  var OPRHeaderHtml = OPRheader.innerHTML;
-  var OPRTemplateHtml = OPRtemplate.innerHTML;
-  // Final HTML variable as empty string
-  var listHtml = OPRHeaderHtml;
+    var url = new URL(window.location.href);
+    var key = url.searchParams.get("event");
+    var urlTeam = url.searchParams.get("team");
 
-  function displayResults(results) {
-      if (results) {
-        for (var team in results) {
-            let url = "prediction.html?team=" + team;
-            listHtml += OPRTemplateHtml.replace(/{{url}}/g, url)
-                                                  .replace(/{{team}}/g, team)
-                                                  .replace(/{{opr}}/g, results[team].opr.toFixed(2))
-                                                  .replace(/{{oprp}}/g, results[team].oprp.toFixed(2))
-                                                  .replace(/{{taxi}}/g, results[team].taxi.toFixed(2))
-                                                  .replace(/{{climb}}/g, results[team].climb.toFixed(2))
-                                                  .replace(/{{quintet}}/g, results[team].quintet.toFixed(2))
-                                                  .replace(/{{auto}}/g, (results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
-                                                  .replace(/{{autoCargoUpper}}/g, results[team].autoCargoUpper.toFixed(2))
-                                                  .replace(/{{autoCargoLower}}/g, results[team].autoCargoLower.toFixed(2))
-                                                  .replace(/{{teleop}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower).toFixed(2))
-                                                  .replace(/{{teleopCargoUpper}}/g, results[team].teleopCargoUpper.toFixed(2))
-                                                  .replace(/{{teleopCargoLower}}/g, results[team].teleopCargoLower.toFixed(2))
-                                                  .replace(/{{penalty}}/g, results[team].penalty.toFixed(2))
-	}
-	// Replace the HTML of #list with final HTML
-        document.getElementById("opr_table").innerHTML = listHtml;
-        sorttable.makeSortable(document.getElementById("opr_table"));
-     }
-  }
+    $('#regional_detail_name').html(key);
 
-  tba.getEvents(function(events) {
-    for (var key in events) {
-      if (events[key].event_type !== 100) {
-        tba.genOPRs('2022' + events[key].event_code, displayResults.bind(events[key]));
-      }
+    function matchBreakdown(team)
+    {
+      window.location.href = "team.html?event=" + key + "&team=" + team;
     }
-  });
+
+    function nextMatch(team)
+    {
+      window.location.href = "prediction.html?team=" + team;
+    }
+
+    tba.genOPRs(key, function(results) {
+
+        // Cache of the template
+        var OPRheader = document.getElementById("opr-header-table");
+        var OPRtemplate = document.getElementById("opr-template-table-entry");
+        // Get the contents of the template
+        var OPRHeaderHtml = OPRheader.innerHTML;
+        var OPRTemplateHtml = OPRtemplate.innerHTML;
+
+        if (results) {
+            // Final HTML variable as empty string
+            var listHtml = OPRHeaderHtml;
+
+            // Loop through dataObject, replace placeholder tags
+            // with actual data, and generate final HTML
+            for (var team in results) {
+                listHtml += OPRTemplateHtml.replace(/{{team}}/g, team)
+                                      .replace(/{{opr}}/g, results[team].opr.toFixed(2))
+                                      .replace(/{{oprp}}/g, results[team].oprp.toFixed(2))
+                                      .replace(/{{taxi}}/g, results[team].taxi.toFixed(2))
+                                      .replace(/{{climb}}/g, results[team].climb.toFixed(2))
+                                      .replace(/{{auto}}/g, (results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
+                                      .replace(/{{autoCargoUpper}}/g, results[team].autoCargoUpper.toFixed(2))
+                                      .replace(/{{autoCargoLower}}/g, results[team].autoCargoLower.toFixed(2))
+                                      .replace(/{{teleop}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower).toFixed(2))
+                                      .replace(/{{teleopCargoUpper}}/g, results[team].teleopCargoUpper.toFixed(2))
+                                      .replace(/{{teleopCargoLower}}/g, results[team].teleopCargoLower.toFixed(2))
+                                      .replace(/{{penalty}}/g, results[team].penalty.toFixed(2));
+            }
+
+            // Replace the HTML of #list with final HTML
+            document.getElementById("opr_table").innerHTML = listHtml;
+            sorttable.makeSortable(document.getElementById("opr_table"));
+        } else {
+            document.getElementById("opr_error").innerHTML = "No data found for this regional/district yet!";
+        }
+    });
 </script>
 
 </html>

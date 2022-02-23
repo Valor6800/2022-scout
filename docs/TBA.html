@@ -32,7 +32,7 @@
         <ul></ul>
     </div>
     
-    <div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="TBA.html">TBA</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TBA_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="TBA.html#getEvent">getEvent</a></li><li><a href="TBA.html#getMatch">getMatch</a></li><li><a href="TBA.html#getTeams">getTeams</a></li></ul></div></li><li><a href="TBA_Generator.html">TBA_Generator</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TBA_Generator_sub"></div></li></ul></div>
+    <div class="lnb-api hidden"><h3>Classes</h3><ul><li><a href="TBA.html">TBA</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TBA_sub"><div class="member-type">Methods</div><ul class="inner"><li><a href="TBA.html#getEvent">getEvent</a></li><li><a href="TBA.html#getMatch">getMatch</a></li><li><a href="TBA.html#getTeams">getTeams</a></li></ul><div class="member-type">Typedef</div><ul class="inner"><li><a href="TBA.html#~TBAResponseCallback">TBAResponseCallback</a></li></ul></div></li><li><a href="TBA_Generator.html">TBA_Generator</a><button type="button" class="hidden toggle-subnav btn btn-link">  <span class="glyphicon glyphicon-plus"></span></button><div class="hidden" id="TBA_Generator_sub"></div></li></ul></div>
 </nav>
 <div id="resizer"></div>
 
@@ -48,7 +48,7 @@
     
         <h2><span class="attribs"><span class="type-signature"></span></span>TBA<span class="signature">()</span><span class="type-signature"></span></h2>
         
-            <div class="class-description">Class representing a TBA.</div>
+            <div class="class-description">Class to pull data from TBA (thebluealliance), as well as calculate component OPRs from resulting data</div>
         
     
 </header>
@@ -68,7 +68,7 @@
             
             <div class="container-source members">
                 <code><a href="tba.js.html">tba.js</a></code>,
-                <code><a href="tba.js.html#line33">line 33</a></code>
+                <code><a href="tba.js.html#line36">line 36</a></code>
             </div>
             
         </h4>
@@ -122,6 +122,13 @@
     
 
     
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li><a href="mailto:mray190@gmail.com">Michael Ray</a></li>
+        </ul>
+    </dd>
+    
 
     
 
@@ -174,7 +181,7 @@
             
             <div class="container-source members">
                 <code><a href="tba.js.html">tba.js</a></code>,
-                <code><a href="tba.js.html#line141">line 141</a></code>
+                <code><a href="tba.js.html#line196">line 196</a></code>
             </div>
             
         </h4>
@@ -251,7 +258,7 @@
             <td class="type">
             
                 
-<span class="param-type">TBAResponseCallback</span>
+<span class="param-type"><a href="TBA.html#~TBAResponseCallback">TBA~TBAResponseCallback</a></span>
 
 
             
@@ -336,7 +343,7 @@
             
             <div class="container-source members">
                 <code><a href="tba.js.html">tba.js</a></code>,
-                <code><a href="tba.js.html#line161">line 161</a></code>
+                <code><a href="tba.js.html#line216">line 216</a></code>
             </div>
             
         </h4>
@@ -413,7 +420,7 @@
             <td class="type">
             
                 
-<span class="param-type">TBAResponseCallback</span>
+<span class="param-type"><a href="TBA.html#~TBAResponseCallback">TBA~TBAResponseCallback</a></span>
 
 
             
@@ -498,7 +505,7 @@
             
             <div class="container-source members">
                 <code><a href="tba.js.html">tba.js</a></code>,
-                <code><a href="tba.js.html#line151">line 151</a></code>
+                <code><a href="tba.js.html#line206">line 206</a></code>
             </div>
             
         </h4>
@@ -575,7 +582,7 @@
             <td class="type">
             
                 
-<span class="param-type">TBAResponseCallback</span>
+<span class="param-type"><a href="TBA.html#~TBAResponseCallback">TBA~TBAResponseCallback</a></span>
 
 
             
@@ -651,6 +658,172 @@
             </dl>
     
 
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+
+        <dl>
+                
+
+<dt>
+    
+        <h4 class="name" id="~TBAResponseCallback">
+            
+                <span class="type-signature"></span>TBAResponseCallback<span class="signature">(responseCode, responseMessage)</span><span class="type-signature"></span>
+                
+            
+            <div class="container-source members">
+                <code><a href="tba.js.html">tba.js</a></code>,
+                <code><a href="tba.js.html#line156">line 156</a></code>
+            </div>
+            
+        </h4>
+
+        
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        This callback is displayed as part of the Requester class.
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+    <div class="container-params">
+        <h5>Parameters:</h5>
+        
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>responseCode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>responseMessage</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    </div>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+    
+
+</dd>
+
+            </dl>
     
 
     

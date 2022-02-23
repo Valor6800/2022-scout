@@ -78,6 +78,6 @@ tba.getNextMatch(eventCode, function(last_match) {
 //     }
 // })
 
-tba.genOPRs('2022mray', function(oprs) {
+tba.genOPRs('2022week0', function(oprs) {
 	// console.log(oprs);
 }, true);

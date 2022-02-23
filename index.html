@@ -15,7 +15,7 @@
   <body class="w3-padding-64">
 
       <div class="w3-top w3-bar w3-black w3-hide-small">
-        <a href="index.html" class="w3-bar-item w3-button" id="home_button">Valor Scout</a>
+        <a href="index.html" class="w3-bar-item w3-button" id="home_button">Home</a>
         <a href="all.html" class="w3-bar-item w3-button">All regionals/districts</a>
         <a href="prediction.html" class="w3-bar-item w3-button">Match Prediction</a>
         <a href="#" class="w3-bar-item w3-button w3-mobile w3-right viper-black-hover" id="questions_button">
@@ -59,22 +59,6 @@
           </table>
       </div>
 
-      <!-- Container for the item content viewer -->
-      <div class="w3-justify w3-card w3-white" id="regional_details" style="display: none;">
-        <header class="w3-container viper-black-no-hover">
-          <h3><span id="regional_detail_name"></span></h3>
-        </header>
-
-        <!-- OPR table -->
-        <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="opr_table">
-        <!--Generated items will go here-->
-        </table>
-
-        <div id="opr_error">
-        </div>
-
-      </div>
-
     <!-- END PAGE CONTENT -->
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -102,58 +86,19 @@
     </tr>
 </script>
 
-<script id="opr-header-table" type="text/template">
-    <thead class="viper-grey">
-        <td>Team</td>
-        <td>OPR</td>
-        <td>OPRP</td>
-        <td>Taxi</td>
-        <td>Climb</td>
-        <td>Auto Cargo</td>
-        <td>Auto Cargo Upper</td>
-        <td>Auto Cargo Lower</td>
-        <td>Teleop Cargo</td>
-        <td>Teleop Cargo Upper</td>
-        <td>Teleop Cargo Lower</td>
-        <td>Penalty</td>
-    </thead>
-</script>
-
-<script id="opr-template-table-entry" type="text/template">
-    <tr class="table_entry" >
-        <td><a href="{{url}}">{{team}}</a></td>
-        <td>{{opr}}</td>
-        <td>{{oprp}}</td>
-        <td>{{taxi}}</td>
-        <td>{{climb}}</td>
-        <td>{{auto}}</td>
-        <td>{{autoCargoUpper}}</td>
-        <td>{{autoCargoLower}}</td>
-        <td>{{teleop}}</td>
-        <td>{{teleopCargoUpper}}</td>
-        <td>{{teleopCargoLower}}</td>
-        <td>{{penalty}}</td>
-    </tr>
-</script>
-
 <script>
     
     $('#getStartedClose').on('click', function() {
         $('#questions_alert').hide();
         Cookies.set('getStartedClose', true, { expires: 365 });
     });
-
-    $('#home_button').on('click', function() {
-      $('#regional_details').hide();
-      $('#regional_list').show();
-    });
     
     $('#questions_button').on('click', function() {
       $("#questions_alert").show();
     });
     var tba = new TBA();
-    var tba_gen = new TBA_Generator();
-    console.log(tba_gen.rnd(49));
+    tba.setYear('2022');
+    tba.setAuthToken('LCBZ7qqYrBR0e06C4QJEjaW1O7r2TZat7KZwvQcfDqShwIxV4N7epHK9lbafjc4M');
 
     tba.getEvents(function(results) {
 
@@ -165,10 +110,6 @@
         var regionalTemplateHtml = regTemplate.innerHTML;
         // Final HTML variable as empty string
         var listHtml = regionalHeaderHtml;
-
-        listHtml += regionalTemplateHtml.replace(/{{name}}/g, 'TEST EVENT - FAKE DATA (simulating blue alliance)')
-                                  .replace(/{{location}}/g, 'CLICK ME TO PREVIEW 2022')
-                .replace(/{{code}}/g, '2022mray');
 
         // Loop through dataObject, replace placeholder tags
         // with actual data, and generate final HTML
@@ -182,55 +123,10 @@
         document.getElementById("regional_table").innerHTML = listHtml;
 
         $('#regional_table tr').not(':first').each(function(index, element) {
+            // $(element).on('click', renderEvent.bind(element));
             $(element).on('click', function() {
-                var name = $(element).find('.table_entry_name').attr('id');
-                var key = $(element).find('.table_entry_code').attr('id');
-                $('#regional_detail_name').html(name);
-                // ga('send', 'event', 'scout', key);
-
-                tba.genOPRs(key, function(results) {
-
-                    // Cache of the template
-                    var OPRheader = document.getElementById("opr-header-table");
-                    var OPRtemplate = document.getElementById("opr-template-table-entry");
-                    // Get the contents of the template
-                    var OPRHeaderHtml = OPRheader.innerHTML;
-                    var OPRTemplateHtml = OPRtemplate.innerHTML;
-
-                    if (results) {
-                        // Final HTML variable as empty string
-                        var listHtml = OPRHeaderHtml;
-
-                        // Loop through dataObject, replace placeholder tags
-                        // with actual data, and generate final HTML
-                        for (var team in results) {
-                            let url = "prediction.html?team=" + team;
-                            if ($(element).find('.table_entry_code').attr('id') == '2022mray')
-                              url += '&simulated=true';
-                            listHtml += OPRTemplateHtml.replace(/{{url}}/g, url)
-                                                  .replace(/{{team}}/g, team)
-                                                  .replace(/{{opr}}/g, results[team].opr.toFixed(2))
-                                                  .replace(/{{oprp}}/g, results[team].oprp.toFixed(2))
-                                                  .replace(/{{taxi}}/g, results[team].taxi.toFixed(2))
-                                                  .replace(/{{climb}}/g, results[team].climb.toFixed(2))
-                                                  .replace(/{{auto}}/g, (results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
-                                                  .replace(/{{autoCargoUpper}}/g, results[team].autoCargoUpper.toFixed(2))
-                                                  .replace(/{{autoCargoLower}}/g, results[team].autoCargoLower.toFixed(2))
-                                                  .replace(/{{teleop}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower).toFixed(2))
-                                                  .replace(/{{teleopCargoUpper}}/g, results[team].teleopCargoUpper.toFixed(2))
-                                                  .replace(/{{teleopCargoLower}}/g, results[team].teleopCargoLower.toFixed(2))
-                                                  .replace(/{{penalty}}/g, results[team].penalty.toFixed(2))
-                        }
-
-                        // Replace the HTML of #list with final HTML
-                        document.getElementById("opr_table").innerHTML = listHtml;
-                        sorttable.makeSortable(document.getElementById("opr_table"));
-                    } else {
-                        document.getElementById("opr_error").innerHTML = "No data found for this regional/district yet!";
-                    }
-                });
-                $('#regional_list').hide();
-                $('#regional_details').show();
+              let key = $(element).find('.table_entry_code').attr('id');
+              window.location.href = "event.html?event=" + key;
             });
         });
     });

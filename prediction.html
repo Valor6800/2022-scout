@@ -15,7 +15,7 @@
   <body class="w3-padding-64">
 
       <div class="w3-top w3-bar w3-black w3-hide-small">
-        <a href="index.html" class="w3-bar-item w3-button" id="home_button">Valor Scout</a>
+        <a href="index.html" class="w3-bar-item w3-button" id="home_button">Home</a>
         <a href="all.html" class="w3-bar-item w3-button">All regionals/districts</a>
         <a href="prediction.html" class="w3-bar-item w3-button">Match Prediction</a>
         <a href="#" class="w3-bar-item w3-button w3-mobile w3-right viper-black-hover" id="questions_button">
@@ -237,6 +237,9 @@ function switchTab(color) {
     };
 
     var tba = new TBA();
+    tba.setYear('2022');
+    tba.setAuthToken('LCBZ7qqYrBR0e06C4QJEjaW1O7r2TZat7KZwvQcfDqShwIxV4N7epHK9lbafjc4M');
+    
     var colors = [ 'blue', 'red' ];
 
     var previousTeam = Cookies.get('team');
