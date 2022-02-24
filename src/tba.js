@@ -376,6 +376,8 @@
                     var robot = parseInt(complete_match_data.alliances[colors[color]].team_keys[i].replace('frc', ''));
                     if (!(robot in results)) {
                         results[robot] = {};
+                    }
+                    if (!(robot in ballCounts)) {
                         ballCounts[robot] = {};
                     }
                     this.parse2022CargoExits(colors[color], match, ballCounts[robot]);
