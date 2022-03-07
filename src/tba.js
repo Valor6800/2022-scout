@@ -616,22 +616,22 @@
                 sums[this.component_opr_keys[i]] = 0;
             }
 
-            sums[this.component_opr_keys[0]] = match['autoCargoLowerNear'] +
-                                               match['autoCargoLowerFar'] +
-                                               match['autoCargoLowerBlue'] +
-                                               match['autoCargoLowerRed'];
-            sums[this.component_opr_keys[1]] = match['autoCargoUpperNear'] +
-                                               match['autoCargoUpperFar'] +
-                                               match['autoCargoUpperBlue'] +
-                                               match['autoCargoUpperRed'];
+            sums[this.component_opr_keys[0]] = match['autoCargoLowerNear'] * 2 +
+                                               match['autoCargoLowerFar'] * 2 +
+                                               match['autoCargoLowerBlue'] * 2 +
+                                               match['autoCargoLowerRed'] * 2;
+            sums[this.component_opr_keys[1]] = match['autoCargoUpperNear'] * 4 +
+                                               match['autoCargoUpperFar'] * 4 +
+                                               match['autoCargoUpperBlue'] * 4 +
+                                               match['autoCargoUpperRed'] * 4;
             sums[this.component_opr_keys[2]] = match['teleopCargoLowerNear'] +
                                                match['teleopCargoLowerFar'] +
                                                match['teleopCargoLowerBlue'] +
                                                match['teleopCargoLowerRed'];
-            sums[this.component_opr_keys[3]] = match['teleopCargoUpperNear'] +
-                                               match['teleopCargoUpperFar'] +
-                                               match['teleopCargoUpperBlue'] +
-                                               match['teleopCargoUpperRed'];
+            sums[this.component_opr_keys[3]] = match['teleopCargoUpperNear'] * 2 +
+                                               match['teleopCargoUpperFar'] * 2 +
+                                               match['teleopCargoUpperBlue'] * 2 +
+                                               match['teleopCargoUpperRed'] * 2;
 
             // Hab game element
             for (var i = 1; i <= 3; i++) {

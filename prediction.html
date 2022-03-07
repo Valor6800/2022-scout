@@ -108,8 +108,8 @@
   <thead>
     <tr class="w3-light-grey">
       <th>Team</th>
-      <th>Lower Cargo</th>
-      <th>Upper Cargo</th>
+      <th>Lower Cargo Pts</th>
+      <th>Upper Cargo Pts</th>
     </tr>
   </thead>
 </script>
@@ -126,8 +126,8 @@
   <thead>
     <tr class="w3-light-grey">
       <th>Team</th>
-      <th>Lower Cargo</th>
-      <th>Upper Cargo</th>
+      <th>Lower Cargo Pts</th>
+      <th>Upper Cargo Pts</th>
     </tr>
   </thead>
 </script>
@@ -407,11 +407,11 @@ function switchTab(color) {
                                           .replace(/{{climb}}/g, result.climb.toFixed(1))
                                           .replace(/{{penalty}}/g, -result.penalty.toFixed(1))
                                           .replace(/{{auto}}/g,
-                                                    (result.autoCargoLower * 2 +
-                                                     result.autoCargoUpper * 4).toFixed(1))
+                                                    (result.autoCargoLower +
+                                                     result.autoCargoUpper).toFixed(1))
                                           .replace(/{{teleop}}/g,
                                                     (result.teleopCargoLower +
-                                                     result.teleopCargoUpper * 2).toFixed(1));
+                                                     result.teleopCargoUpper).toFixed(1));
             teamDataset[0].data.push(result.taxi.toFixed(1));
             teamDataset[1].data.push((result.autoCargoLower +
                                       result.autoCargoUpper).toFixed(1));
@@ -473,7 +473,7 @@ function switchTab(color) {
               options: {
                   title: {
                       display: true,
-                      text: 'Auto Cargo'
+                      text: 'Auto Cargo Pts'
                   },
                   scales: {
                       xAxes: [{ stacked: true }],
@@ -498,7 +498,7 @@ function switchTab(color) {
               options: {
                   title: {
                       display: true,
-                      text: 'Teleop Cargo'
+                      text: 'Teleop Cargo Pts'
                   },
                   scales: {
                       xAxes: [{ stacked: true }],
