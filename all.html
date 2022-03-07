@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>ViperScout</title>
+    <title>Valor Scout</title>
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" type="text/css" href="./styles.css">
@@ -90,7 +90,6 @@
         <td>OPRP</td>
         <td>Taxi</td>
         <td>Climb</td>
-        <td>Quintet</td>
         <td>Auto Cargo</td>
         <td>Auto Cargo Upper</td>
         <td>Auto Cargo Lower</td>
@@ -108,7 +107,6 @@
         <td>{{oprp}}</td>
         <td>{{taxi}}</td>
         <td>{{climb}}</td>
-        <td>{{quintet}}</td>
         <td>{{auto}}</td>
         <td>{{autoCargoUpper}}</td>
         <td>{{autoCargoLower}}</td>
@@ -152,7 +150,6 @@
                                                   .replace(/{{oprp}}/g, results[team].oprp.toFixed(2))
                                                   .replace(/{{taxi}}/g, results[team].taxi.toFixed(2))
                                                   .replace(/{{climb}}/g, results[team].climb.toFixed(2))
-                                                  .replace(/{{quintet}}/g, results[team].quintet.toFixed(2))
                                                   .replace(/{{auto}}/g, (results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
                                                   .replace(/{{autoCargoUpper}}/g, results[team].autoCargoUpper.toFixed(2))
                                                   .replace(/{{autoCargoLower}}/g, results[team].autoCargoLower.toFixed(2))
