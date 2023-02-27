@@ -80,15 +80,16 @@
         <td>OPR</td>
         <td>OPRP</td>
         <td>Taxi</td>
-        <td>Climb</td>
-        <td>Auto Cargo</td>
-        <td>Auto Cargo Upper</td>
-        <td>Auto Cargo Lower</td>
-        <td>Teleop Cargo</td>
-        <td>Teleop Cargo Upper</td>
-        <td>Teleop Cargo Lower</td>
+        <td>Auto Piece</td>
+        <td>Auto Cube</td>
+        <td>Auto Cone</td>
+        <td>Auto Charge</td>
+        <td>Teleop Piece</td>
+        <td>Teleop Cube</td>
+        <td>Teleop Cone</td>
+        <td>Endgame</td>
         <td>Penalty</td>
-        <td>Cargo Breakdown</td>
+        <td>Cone/Cube Breakdown</td>
         <td>Match Prediction</td>
     </thead>
 </script>
@@ -99,15 +100,16 @@
         <td>{{opr}}</td>
         <td>{{oprp}}</td>
         <td>{{taxi}}</td>
-        <td>{{climb}}</td>
         <td>{{auto}}</td>
-        <td>{{autoCargoUpper}}</td>
-        <td>{{autoCargoLower}}</td>
+        <td>{{autoCube}}</td>
+        <td>{{autoCone}}</td>
+        <td>{{autoCharge}}</td>
         <td>{{teleop}}</td>
-        <td>{{teleopCargoUpper}}</td>
-        <td>{{teleopCargoLower}}</td>
+        <td>{{teleopCube}}</td>
+        <td>{{teleopCone}}</td>
+        <td>{{teleopCharge}}</td>
         <td>{{penalty}}</td>
-        <td><button onclick="matchBreakdown({{team}})">Cargo Breakdown</button></td>
+        <td><button onclick="matchBreakdown({{team}})">Cone/Cube Breakdown</button></td>
         <td><button onclick="nextMatch({{team}})">Next Match</button></td>
     </tr>
 </script>
@@ -123,7 +125,7 @@
       $("#questions_alert").show();
     });
     var tba = new TBA();
-    tba.setYear('2022');
+    tba.setYear('2023');
     tba.setAuthToken('LCBZ7qqYrBR0e06C4QJEjaW1O7r2TZat7KZwvQcfDqShwIxV4N7epHK9lbafjc4M');
 
     var url = new URL(window.location.href);
@@ -158,17 +160,22 @@
             // Loop through dataObject, replace placeholder tags
             // with actual data, and generate final HTML
             for (var team in results) {
+                var autoCube = results[team].autoCubeLow + results[team].autoCubeMid + results[team].autoCubeHigh;
+                var autoCone = results[team].autoConeLow + results[team].autoConeMid + results[team].autoConeHigh;
+                var teleopCube = results[team].teleopCubeLow + results[team].teleopCubeMid + results[team].teleopCubeHigh;
+                var teleopCone = results[team].teleopConeLow + results[team].teleopConeMid + results[team].teleopConeHigh;
                 listHtml += OPRTemplateHtml.replace(/{{team}}/g, team)
                                       .replace(/{{opr}}/g, results[team].opr.toFixed(2))
                                       .replace(/{{oprp}}/g, results[team].oprp.toFixed(2))
                                       .replace(/{{taxi}}/g, results[team].taxi.toFixed(2))
-                                      .replace(/{{climb}}/g, results[team].climb.toFixed(2))
-                                      .replace(/{{auto}}/g, (results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
-                                      .replace(/{{autoCargoUpper}}/g, results[team].autoCargoUpper.toFixed(2))
-                                      .replace(/{{autoCargoLower}}/g, results[team].autoCargoLower.toFixed(2))
-                                      .replace(/{{teleop}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower).toFixed(2))
-                                      .replace(/{{teleopCargoUpper}}/g, results[team].teleopCargoUpper.toFixed(2))
-                                      .replace(/{{teleopCargoLower}}/g, results[team].teleopCargoLower.toFixed(2))
+                                      .replace(/{{auto}}/g, (autoCone + autoCube).toFixed(2))
+                                      .replace(/{{autoCube}}/g, autoCube.toFixed(2))
+                                      .replace(/{{autoCone}}/g, autoCone.toFixed(2))
+                                      .replace(/{{autoCharge}}/g, results[team].autoCharge.toFixed(2))
+                                      .replace(/{{teleop}}/g, (teleopCone + teleopCube).toFixed(2))
+                                      .replace(/{{teleopCube}}/g, teleopCube.toFixed(2))
+                                      .replace(/{{teleopCone}}/g, teleopCone.toFixed(2))
+                                      .replace(/{{teleopCharge}}/g, results[team].teleopCharge.toFixed(2))
                                       .replace(/{{penalty}}/g, results[team].penalty.toFixed(2));
             }
 

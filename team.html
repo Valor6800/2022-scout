@@ -69,68 +69,30 @@
           <!-- Container for the item content viewer -->
           <div class="w3-justify w3-padding w3-white w3-third" id="cargo_details">
             <header class="w3-container viper-black-no-hover">
-              <h3>Cargo OPR</h3>
+              <h3>Game Piece OPR</h3>
             </header>
-            <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="cargo_table">
+            <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="piece_table">
             </table>
           </div>
           <!-- Container for the cargo breakdown content viewer -->
           <div class="w3-justify w3-padding w3-white w3-third" id="cargo_upper_breakdown">
             <header class="w3-container viper-black-no-hover">
-              <h3>Upper Cargo Exit Breakdown</h3>
+              <h3>Cube Breakdown (avg. Count)</h3>
             </header>
-            <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="cargo_upper_table">
+            <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="cube_table">
             </table>
           </div>
           <!-- Container for the cargo breakdown content viewer -->
           <div class="w3-justify w3-padding w3-white w3-third" id="cargo_lower_breakdown">
             <header class="w3-container viper-black-no-hover">
-              <h3>Lower Cargo Exit Breakdown</h3>
+              <h3>Cone Breakdown (avg. Count)</h3>
             </header>
-            <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="cargo_lower_table">
+            <table class="sortable w3-card w3-table w3-striped w3-hoverable" id="cone_table">
             </table>
           </div>
       </div>
 
       <hr>
-
-      <div class="w3-justify w3-card w3-white">
-        <header class="w3-container viper-black-no-hover">
-          <h3>Key</h3>
-        </header>
-        <div class="w3-cell w3-third">
-          <table class="sortable w3-card w3-table w3-striped w3-hoverable">
-            <thead class="viper-grey">
-              <td>Zone</td>
-              <td>Red Alliance</td>
-              <td>Blue Alliance</td>
-            </thead>
-            <tr>
-              <td>Front</td>
-              <td>Red</td>
-              <td>Blue</td>
-            </tr>
-            <tr>
-              <td>Back</td>
-              <td>Blue</td>
-              <td>Red</td>
-            </tr>
-            <tr>
-              <td>Left</td>
-              <td>Near</td>
-              <td>Far</td>
-            </tr>
-            <tr>
-              <td>Right</td>
-              <td>Far</td>
-              <td>Near</td>
-            </tr>
-          </table>
-        </div>
-        <div class="w3-container w3-twothird">
-            <img src="https://www.chiefdelphi.com/uploads/default/original/3X/5/f/5f678e3fcbe72aac488b0a579a4c20ebe4761b11.jpeg" style=" max-width:100%;">
-        </div>
-      </div>
 
     <!-- END PAGE CONTENT -->
     </div>
@@ -146,59 +108,52 @@
 <script id="cargo-header-table" type="text/template">
     <thead class="viper-grey">
         <td>Mode</td>
-        <td>Front</td>
-        <td>Back</td>
-        <td>Left</td>
-        <td>Right</td>
+        <td>Top</td>
+        <td>Mid</td>
+        <td>Bottom</td>
     </thead>
 </script>
 
-<script id="cargo-lower-template-table-entry" type="text/template">
+<script id="cone-template-table-entry" type="text/template">
     <tr class="table_entry" >
         <td>Auto</td>
-        <td>{{autoLowerFront}}</td>
-        <td>{{autoLowerBack}}</td>
-        <td>{{autoLowerLeft}}</td>
-        <td>{{autoLowerRight}}</td>
+        <td>{{autoConeHigh}}</td>
+        <td>{{autoConeMid}}</td>
+        <td>{{autoConeLow}}</td>
     </tr>
     <tr class="table_entry" >
         <td>Teleop</td>
-        <td>{{teleopLowerFront}}</td>
-        <td>{{teleopLowerBack}}</td>
-        <td>{{teleopLowerLeft}}</td>
-        <td>{{teleopLowerRight}}</td>
+        <td>{{teleopConeHigh}}</td>
+        <td>{{teleopConeMid}}</td>
+        <td>{{teleopConeLow}}</td>
     </tr>
     <tr class="table_entry" >
         <td>Total</td>
-        <td>{{totalLowerFront}}</td>
-        <td>{{totalLowerBack}}</td>
-        <td>{{totalLowerLeft}}</td>
-        <td>{{totalLowerRight}}</td>
+        <td>{{totalConeHigh}}</td>
+        <td>{{totalConeMid}}</td>
+        <td>{{totalConeLow}}</td>
     </tr>
 </script>
 
-<script id="cargo-upper-template-table-entry" type="text/template">
-    <tr class="table_entry" >
-        <td>Auto</td>
-        <td>{{autoUpperFront}}</td>
-        <td>{{autoUpperBack}}</td>
-        <td>{{autoUpperLeft}}</td>
-        <td>{{autoUpperRight}}</td>
-    </tr>
-    <tr class="table_entry" >
-        <td>Teleop</td>
-        <td>{{teleopUpperFront}}</td>
-        <td>{{teleopUpperBack}}</td>
-        <td>{{teleopUpperLeft}}</td>
-        <td>{{teleopUpperRight}}</td>
-    </tr>
-    <tr class="table_entry" >
-        <td>Total</td>
-        <td>{{totalUpperFront}}</td>
-        <td>{{totalUpperBack}}</td>
-        <td>{{totalUpperLeft}}</td>
-        <td>{{totalUpperRight}}</td>
-    </tr>
+<script id="cube-template-table-entry" type="text/template">
+  <tr class="table_entry" >
+      <td>Auto</td>
+      <td>{{autoCubeHigh}}</td>
+      <td>{{autoCubeMid}}</td>
+      <td>{{autoCubeLow}}</td>
+  </tr>
+  <tr class="table_entry" >
+      <td>Teleop</td>
+      <td>{{teleopCubeHigh}}</td>
+      <td>{{teleopCubeMid}}</td>
+      <td>{{teleopCubeLow}}</td>
+  </tr>
+  <tr class="table_entry" >
+      <td>Total</td>
+      <td>{{totalCubeHigh}}</td>
+      <td>{{totalCubeMid}}</td>
+      <td>{{totalCubeLow}}</td>
+  </tr>
 </script>
 
 <script id="opr-header-table" type="text/template">
@@ -206,9 +161,14 @@
         <td>OPR</td>
         <td>OPRP</td>
         <td>Taxi</td>
-        <td>Climb</td>
-        <td>Auto Cargo</td>
-        <td>Teleop Cargo</td>
+        <td>Auto Piece</td>
+        <td>Auto Cube</td>
+        <td>Auto Cone</td>
+        <td>Auto Charge</td>
+        <td>Teleop Piece</td>
+        <td>Teleop Cube</td>
+        <td>Teleop Cone</td>
+        <td>Endgame</td>
         <td>Penalty</td>
     </thead>
 </script>
@@ -216,21 +176,26 @@
 <script id="opr-special-header-table" type="text/template">
     <thead class="viper-grey">
         <td>Mode</td>
-        <td>Cargo</td>
-        <td>Cargo Upper</td>
-        <td>Cargo Lower</td>
+        <td>Piece</td>
+        <td>Cone</td>
+        <td>Cube</td>
     </thead>
 </script>
 
 <script id="opr-template-table-entry" type="text/template">
     <tr class="table_entry" >
-        <td>{{opr}}</td>
-        <td>{{oprp}}</td>
-        <td>{{taxi}}</td>
-        <td>{{climb}}</td>
-        <td>{{auto}}</td>
-        <td>{{teleop}}</td>
-        <td>{{penalty}}</td>
+      <td>{{opr}}</td>
+      <td>{{oprp}}</td>
+      <td>{{taxi}}</td>
+      <td>{{auto}}</td>
+      <td>{{autoCube}}</td>
+      <td>{{autoCone}}</td>
+      <td>{{autoCharge}}</td>
+      <td>{{teleop}}</td>
+      <td>{{teleopCube}}</td>
+      <td>{{teleopCone}}</td>
+      <td>{{teleopCharge}}</td>
+      <td>{{penalty}}</td>
     </tr>
 </script>
 
@@ -238,20 +203,20 @@
     <tr class="table_entry" >
         <td>Auto</td>
         <td>{{auto}}</td>
-        <td>{{autoCargoUpper}}</td>
-        <td>{{autoCargoLower}}</td>
+        <td>{{autoCone}}</td>
+        <td>{{autoCube}}</td>
     </tr>
     <tr class="table_entry" >
         <td>Teleop</td>
         <td>{{teleop}}</td>
-        <td>{{teleopCargoUpper}}</td>
-        <td>{{teleopCargoLower}}</td>
+        <td>{{teleopCone}}</td>
+        <td>{{teleopCube}}</td>
     </tr>
     <tr class="table_entry" >
         <td>Total</td>
         <td>{{total}}</td>
-        <td>{{totalCargoUpper}}</td>
-        <td>{{totalCargoLower}}</td>
+        <td>{{totalCone}}</td>
+        <td>{{totalCube}}</td>
     </tr>
 </script>
 
@@ -266,7 +231,7 @@
       $("#questions_alert").show();
     });
     var tba = new TBA();
-    tba.setYear('2022');
+    tba.setYear('2023');
     tba.setAuthToken('LCBZ7qqYrBR0e06C4QJEjaW1O7r2TZat7KZwvQcfDqShwIxV4N7epHK9lbafjc4M');
 
     var url = new URL(window.location.href);
@@ -288,70 +253,101 @@
         var OPRSpecialHeaderHtml = OPRSpecialHeader.innerHTML;
         var OPRSpecialTemplateHtml = OPRSpecialTemplate.innerHTML;
 
-        var Cargoheader = document.getElementById("cargo-header-table");
-        var CargoLowerTemplate = document.getElementById("cargo-lower-template-table-entry");
-        var CargoUpperTemplate = document.getElementById("cargo-upper-template-table-entry");
+        var GamePieceHeader = document.getElementById("cargo-header-table");
+        var ConeTemplate = document.getElementById("cone-template-table-entry");
+        var CubeTemplate = document.getElementById("cube-template-table-entry");
 
-        var CargoHeaderHtml = Cargoheader.innerHTML;
-        var CargoLowerTemplateHtml = CargoLowerTemplate.innerHTML;
-        var CargoUpperTemplateHtml = CargoUpperTemplate.innerHTML;
+        var GamePieceHeaderHtml = GamePieceHeader.innerHTML;
+        var ConeTemplateHtml = ConeTemplate.innerHTML;
+        var CubeTemplateHtml = CubeTemplate.innerHTML;
 
         if (results) {
             // Final HTML variable as empty string
             var oprHtml = OPRHeaderHtml;
             var oprSpecialHtml = OPRSpecialHeaderHtml;
+
+            var autoCubeLow = results[team].autoCubeLow;
+            var autoCubeMid = results[team].autoCubeMid;
+            var autoCubeHigh = results[team].autoCubeHigh;
+            var teleopCubeLow = results[team].teleopCubeLow;
+            var teleopCubeMid = results[team].teleopCubeMid;
+            var teleopCubeHigh = results[team].teleopCubeHigh;
+            var totalCubeLow = autoCubeLow + teleopCubeLow;
+            var totalCubeMid = autoCubeMid + teleopCubeMid;
+            var totalCubeHigh = autoCubeHigh + teleopCubeHigh;
+
+            var autoConeLow = results[team].autoConeLow;
+            var autoConeMid = results[team].autoConeMid;
+            var autoConeHigh = results[team].autoConeHigh;
+            var teleopConeLow = results[team].teleopConeLow;
+            var teleopConeMid = results[team].teleopConeMid;
+            var teleopConeHigh = results[team].teleopConeHigh;
+            var totalConeLow = autoConeLow + teleopConeLow;
+            var totalConeMid = autoConeMid + teleopConeMid;
+            var totalConeHigh = autoConeHigh + teleopConeHigh;
+
+            var autoCube = autoCubeLow + autoCubeMid + autoCubeHigh;
+            var autoCone = autoConeLow + autoConeMid + autoConeHigh;
+            var teleopCube = teleopCubeLow + teleopCubeMid + teleopCubeHigh;
+            var teleopCone = teleopConeLow + teleopConeMid + teleopConeHigh;
+
+            var totalCube = autoCube + teleopCube;
+            var totalCone = autoCone + teleopCone;
+            var total = totalCube + totalCone;
+
+            var auto = autoCone + autoCube;
+            var teleop = teleopCone + teleopCube;
+
             oprHtml += OPRTemplateHtml.replace(/{{opr}}/g, results[team].opr.toFixed(2))
                                   .replace(/{{oprp}}/g, results[team].oprp.toFixed(2))
                                   .replace(/{{taxi}}/g, results[team].taxi.toFixed(2))
-                                  .replace(/{{climb}}/g, results[team].climb.toFixed(2))
-                                  .replace(/{{auto}}/g, (results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
-                                  .replace(/{{teleop}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower).toFixed(2))
+                                  .replace(/{{auto}}/g, auto.toFixed(2))
+                                  .replace(/{{autoCube}}/g, autoCube.toFixed(2))
+                                  .replace(/{{autoCone}}/g, autoCone.toFixed(2))
+                                  .replace(/{{autoCharge}}/g, results[team].autoCharge.toFixed(2))
+                                  .replace(/{{teleop}}/g, teleop.toFixed(2))
+                                  .replace(/{{teleopCube}}/g, teleopCube.toFixed(2))
+                                  .replace(/{{teleopCone}}/g, teleopCone.toFixed(2))
+                                  .replace(/{{teleopCharge}}/g, results[team].teleopCharge.toFixed(2))
                                   .replace(/{{penalty}}/g, results[team].penalty.toFixed(2))
 
-            oprSpecialHtml += OPRSpecialTemplateHtml.replace(/{{auto}}/g, (results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
-                                  .replace(/{{autoCargoUpper}}/g, results[team].autoCargoUpper.toFixed(2))
-                                  .replace(/{{autoCargoLower}}/g, results[team].autoCargoLower.toFixed(2))
-                                  .replace(/{{teleop}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower).toFixed(2))
-                                  .replace(/{{teleopCargoUpper}}/g, results[team].teleopCargoUpper.toFixed(2))
-                                  .replace(/{{teleopCargoLower}}/g, results[team].teleopCargoLower.toFixed(2))
-                                  .replace(/{{total}}/g, (results[team].teleopCargoUpper + results[team].teleopCargoLower + results[team].autoCargoUpper + results[team].autoCargoLower).toFixed(2))
-                                  .replace(/{{totalCargoUpper}}/g, (results[team].teleopCargoUpper + results[team].autoCargoUpper).toFixed(2))
-                                  .replace(/{{totalCargoLower}}/g, (results[team].teleopCargoLower + results[team].autoCargoLower).toFixed(2))
+            oprSpecialHtml += OPRSpecialTemplateHtml.replace(/{{auto}}/g, auto.toFixed(2))
+                                  .replace(/{{autoCone}}/g, autoCone.toFixed(2))
+                                  .replace(/{{autoCube}}/g, autoCube.toFixed(2))
+                                  .replace(/{{teleop}}/g, teleop.toFixed(2))
+                                  .replace(/{{teleopCone}}/g, teleopCone.toFixed(2))
+                                  .replace(/{{teleopCube}}/g, teleopCube.toFixed(2))
+                                  .replace(/{{total}}/g, total.toFixed(2))
+                                  .replace(/{{totalCone}}/g, totalCone.toFixed(2))
+                                  .replace(/{{totalCube}}/g, totalCube.toFixed(2))
 
-            var cargoLowerHtml = CargoHeaderHtml;
-            var cargoUpperHtml = CargoHeaderHtml;
-            cargoLowerHtml += CargoLowerTemplateHtml.replace(/{{autoLowerFront}}/g, results[team].autoLowerFront)
-                                                    .replace(/{{autoLowerBack}}/g, results[team].autoLowerBack)
-                                                    .replace(/{{autoLowerLeft}}/g, results[team].autoLowerLeft)
-                                                    .replace(/{{autoLowerRight}}/g, results[team].autoLowerRight)
-                                                    .replace(/{{teleopLowerFront}}/g, results[team].teleopLowerFront)
-                                                    .replace(/{{teleopLowerBack}}/g, results[team].teleopLowerBack)
-                                                    .replace(/{{teleopLowerLeft}}/g, results[team].teleopLowerLeft)
-                                                    .replace(/{{teleopLowerRight}}/g, results[team].teleopLowerRight)
-                                                    .replace(/{{totalLowerFront}}/g, results[team].teleopLowerFront + results[team].autoLowerFront)
-                                                    .replace(/{{totalLowerBack}}/g, results[team].teleopLowerBack + results[team].autoLowerBack)
-                                                    .replace(/{{totalLowerLeft}}/g, results[team].teleopLowerLeft + results[team].autoLowerLeft)
-                                                    .replace(/{{totalLowerRight}}/g, results[team].teleopLowerRight + results[team].autoLowerRight)
-                                        
+            var coneHtml = GamePieceHeaderHtml;
+            var cubeHtml = GamePieceHeaderHtml;
+            cubeHtml += CubeTemplateHtml.replace(/{{autoCubeHigh}}/g, (autoCubeHigh / 6).toFixed(2))
+                                        .replace(/{{autoCubeMid}}/g, (autoCubeMid / 4).toFixed(2))
+                                        .replace(/{{autoCubeLow}}/g, (autoCubeLow / 3).toFixed(2))
+                                        .replace(/{{teleopCubeHigh}}/g, (teleopCubeHigh / 5).toFixed(2))
+                                        .replace(/{{teleopCubeMid}}/g, (teleopCubeMid / 3).toFixed(2))
+                                        .replace(/{{teleopCubeLow}}/g, (teleopCubeLow / 2).toFixed(2))
+                                        .replace(/{{totalCubeHigh}}/g, (autoCubeHigh / 6 + teleopCubeHigh / 5).toFixed(2))
+                                        .replace(/{{totalCubeMid}}/g, (autoCubeMid / 4 + teleopCubeMid / 3).toFixed(2))
+                                        .replace(/{{totalCubeLow}}/g, (autoCubeLow / 3 + teleopCubeLow / 2).toFixed(2))
 
-            cargoUpperHtml += CargoUpperTemplateHtml.replace(/{{autoUpperFront}}/g, results[team].autoUpperFront)
-                                                    .replace(/{{autoUpperBack}}/g, results[team].autoUpperBack)
-                                                    .replace(/{{autoUpperLeft}}/g, results[team].autoUpperLeft)
-                                                    .replace(/{{autoUpperRight}}/g, results[team].autoUpperRight)
-                                                    .replace(/{{teleopUpperFront}}/g, results[team].teleopUpperFront)
-                                                    .replace(/{{teleopUpperBack}}/g, results[team].teleopUpperBack)
-                                                    .replace(/{{teleopUpperLeft}}/g, results[team].teleopUpperLeft)
-                                                    .replace(/{{teleopUpperRight}}/g, results[team].teleopUpperRight)
-                                                    .replace(/{{totalUpperFront}}/g, results[team].teleopUpperFront + results[team].autoUpperFront)
-                                                    .replace(/{{totalUpperBack}}/g, results[team].teleopUpperBack + results[team].autoUpperBack)
-                                                    .replace(/{{totalUpperLeft}}/g, results[team].teleopUpperLeft + results[team].autoUpperLeft)
-                                                    .replace(/{{totalUpperRight}}/g, results[team].teleopUpperRight + results[team].autoUpperRight)
+            coneHtml += ConeTemplateHtml.replace(/{{autoConeHigh}}/g, (autoConeHigh / 6).toFixed(2))
+                                        .replace(/{{autoConeMid}}/g, (autoConeMid / 4).toFixed(2))
+                                        .replace(/{{autoConeLow}}/g, (autoConeLow / 3).toFixed(2))
+                                        .replace(/{{teleopConeHigh}}/g, (teleopConeHigh / 5).toFixed(2))
+                                        .replace(/{{teleopConeMid}}/g, (teleopConeMid / 3).toFixed(2))
+                                        .replace(/{{teleopConeLow}}/g, (teleopConeLow / 2).toFixed(2))
+                                        .replace(/{{totalConeHigh}}/g, (autoConeHigh / 6 + teleopConeHigh / 5).toFixed(2))
+                                        .replace(/{{totalConeMid}}/g, (autoConeMid / 4 + teleopConeMid / 3).toFixed(2))
+                                        .replace(/{{totalConeLow}}/g, (autoConeLow / 3 + teleopConeLow / 2).toFixed(2))
 
             // Replace the HTML of #list with final HTML
             document.getElementById("opr_table").innerHTML = oprHtml;
-            document.getElementById("cargo_table").innerHTML = oprSpecialHtml;
-            document.getElementById("cargo_lower_table").innerHTML = cargoLowerHtml;
-            document.getElementById("cargo_upper_table").innerHTML = cargoUpperHtml;
+            document.getElementById("piece_table").innerHTML = oprSpecialHtml;
+            document.getElementById("cone_table").innerHTML = coneHtml;
+            document.getElementById("cube_table").innerHTML = cubeHtml;
             sorttable.makeSortable(document.getElementById("opr_table"));
 
         } else {

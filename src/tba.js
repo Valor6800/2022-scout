@@ -35,7 +35,7 @@
      */
     class TBA {
 
-        setYear(year=2022)
+        setYear(year=2023)
         {
             this.year = year;
         }
@@ -53,7 +53,7 @@
             /**
              * @private
              */
-            this.year = '2022';
+            this.year = '2023';
 
             /**
              * @private
@@ -118,7 +118,29 @@
             /**
              * @private
              */
-            this.component_opr_keys = this.component_opr_2022_keys;
+            this.component_opr_2023_keys = [
+                'autoCubeLow',
+                'autoCubeMid',
+                'autoCubeHigh',
+                'autoConeLow',
+                'autoConeMid',
+                'autoConeHigh',
+                'teleopCubeLow',
+                'teleopCubeMid',
+                'teleopCubeHigh',
+                'teleopConeLow',
+                'teleopConeMid',
+                'teleopConeHigh',
+                'autoCharge',
+                'taxi',
+                'teleopCharge',
+                'penalty'
+            ];
+
+            /**
+             * @private
+             */
+            this.component_opr_keys = this.component_opr_2023_keys;
 
             /**
              * @private
@@ -363,7 +385,7 @@
 
         // Internal helper functions (generic)
 
-        parseMatch(complete_match_data, ballCounts)
+        parseMatch(complete_match_data)
         {
             var results = {};
             var match = complete_match_data.score_breakdown;
@@ -371,16 +393,12 @@
             let colors = ['blue', 'red'];
             let fouls = [0, 0];
             for (var color in colors) {
-                let sums = this.parse2022Match(match[colors[color]]);
+                let sums = this.parse2023Match(match[colors[color]]);
                 for (var i = 0; i < 3; i++) {
                     var robot = parseInt(complete_match_data.alliances[colors[color]].team_keys[i].replace('frc', ''));
                     if (!(robot in results)) {
                         results[robot] = {};
                     }
-                    if (!(robot in ballCounts)) {
-                        ballCounts[robot] = {};
-                    }
-                    this.parse2022CargoExits(colors[color], match, ballCounts[robot]);
                     for (var j = 0; j < this.component_opr_keys.length; j++) {
                         if (j === this.foul_idx) {
                             fouls[1 - color] = sums[this.component_opr_keys[j]];
@@ -463,11 +481,10 @@
                     callback(null);
                     return null;
                 }
-                let ballCounts = {};
                 for (var match in matches) {
-                    if (matches[match].actual_time && (
+                    if (matches[match] && matches[match].actual_time && (
                         matches[match].comp_level === 'qm')) {
-                        var parsed_match = this.parseMatch(matches[match], ballCounts);
+                        var parsed_match = this.parseMatch(matches[match]);
                         for (var team in parsed_match) {
 
                             // Initialize entrys
@@ -567,7 +584,6 @@
                     }
                     i++;
                 }
-                this.fillBallCounts(oprs,ballCounts);
                 if (gen_csv)
                     this.genCSV(oprs, callback);
                 else
@@ -641,6 +657,65 @@
                                                    (match['endgameRobot' + i] === 'Mid' ? 6 :
                                                    (match['endgameRobot' + i] === 'Low' ? 4 : 0)));
             }
+
+            // Foul points
+            sums[this.component_opr_keys[this.foul_idx]] += match['foulPoints'];
+
+            // Return element sum array
+            return sums;
+        }
+
+        parse2023Match(match)
+        {
+            let sums = {};
+            for (var i = 0; i < this.component_opr_keys.length; i++) {
+                sums[this.component_opr_keys[i]] = 0;
+            }
+
+            //auto low
+            match.autoCommunity.B.forEach(function myFunction(item) {
+                if (item == 'Cube') sums[this.component_opr_keys[0]] += 3;
+                if (item == 'Cone') sums[this.component_opr_keys[3]] += 3;
+            }.bind(this));
+
+            // auto mid
+            match.autoCommunity.M.forEach(function myFunction(item) {
+                if (item == 'Cube') sums[this.component_opr_keys[1]] += 4;
+                if (item == 'Cone') sums[this.component_opr_keys[4]] += 4;
+            }.bind(this));
+
+            // auto high
+            match.autoCommunity.T.forEach(function myFunction(item) {
+                if (item == 'Cube') sums[this.component_opr_keys[2]] += 6;
+                if (item == 'Cone') sums[this.component_opr_keys[5]] += 6;
+            }.bind(this));
+
+            //teleop low
+            match.teleopCommunity.B.forEach(function myFunction(item) {
+                if (item == 'Cube') sums[this.component_opr_keys[6]] += 2;
+                if (item == 'Cone') sums[this.component_opr_keys[9]] += 2;
+            }.bind(this));
+
+            // teleop mid
+            match.teleopCommunity.M.forEach(function myFunction(item) {
+                if (item == 'Cube') sums[this.component_opr_keys[7]] += 3;
+                if (item == 'Cone') sums[this.component_opr_keys[10]] += 3;
+            }.bind(this));
+
+            // teleop high
+            match.teleopCommunity.T.forEach(function myFunction(item) {
+                if (item == 'Cube') sums[this.component_opr_keys[8]] += 5;
+                if (item == 'Cone') sums[this.component_opr_keys[11]] += 5;
+            }.bind(this));
+
+            for (var i = 1; i <= 3; i++) {
+                sums[this.component_opr_keys[13]] += match['mobilityRobot' + i] === 'Yes' ? 3 : 0;
+            }
+
+            // auto charge
+            sums[this.component_opr_keys[12]] += match['autoChargeStationPoints'];
+            // endgame charge
+            sums[this.component_opr_keys[14]] += match['endGameChargeStationPoints'] + match['endGameParkPoints'];
 
             // Foul points
             sums[this.component_opr_keys[this.foul_idx]] += match['foulPoints'];
