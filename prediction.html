@@ -108,8 +108,8 @@
   <thead>
     <tr class="w3-light-grey">
       <th>Team</th>
-      <th>Lower Cargo Pts</th>
-      <th>Upper Cargo Pts</th>
+      <th>Cone Pts</th>
+      <th>Cube Pts</th>
     </tr>
   </thead>
 </script>
@@ -117,8 +117,8 @@
 <script id="template-auto" type="text/template">
   <tr>
     <td>{{team}}</td>
-    <td>{{auto_lower}}</td>
-    <td>{{auto_upper}}</td>
+    <td>{{auto_cone}}</td>
+    <td>{{auto_cube}}</td>
   </tr>
 </script>
 
@@ -126,8 +126,8 @@
   <thead>
     <tr class="w3-light-grey">
       <th>Team</th>
-      <th>Lower Cargo Pts</th>
-      <th>Upper Cargo Pts</th>
+      <th>Cone Pts</th>
+      <th>Cube Pts</th>
     </tr>
   </thead>
 </script>
@@ -135,8 +135,8 @@
 <script id="template-teleop" type="text/template">
   <tr>
     <td>{{team}}</td>
-    <td>{{teleop_lower}}</td>
-    <td>{{teleop_upper}}</td>
+    <td>{{teleop_cone}}</td>
+    <td>{{teleop_cube}}</td>
   </tr>
 </script>
 
@@ -148,7 +148,8 @@
       <th>Auto Pts</th>
       <th>Teleop Pts</th>
       <th>Taxi Pts</th>
-      <th>Climb Pts</th>
+      <th>Auto Charge</th>
+      <th>Teleop Charge</th>
       <th>Penalty Pts</th>
     </tr>
   </thead>
@@ -161,7 +162,8 @@
     <td>{{auto}}</td>
     <td>{{teleop}}</td>
     <td>{{taxi}}</td>
-    <td>{{climb}}</td>
+    <td>{{autoCharge}}</td>
+    <td>{{teleopCharge}}</td>
     <td>{{penalty}}</td>
   </tr>
 </script>
@@ -174,12 +176,12 @@
       </table>
     </div>
     <div class="w3-third w3-padding w3-center">
-      <h4>Auto Cargo</h4>
+      <h4>Auto Pieces</h4>
       <table class="sortable w3-hoverable w3-striped w3-table" id="{{color}}-auto">
       </table>
     </div>
     <div class="w3-third w3-padding w3-center">
-      <h4>Teleop Cargo</h4>
+      <h4>Teleop Pieces</h4>
       <table class="sortable w3-hoverable w3-striped w3-table" id="{{color}}-teleop">
       </table>
     </div>
@@ -237,7 +239,7 @@ function switchTab(color) {
     };
 
     var tba = new TBA();
-    tba.setYear('2022');
+    tba.setYear('2023');
     tba.setAuthToken('LCBZ7qqYrBR0e06C4QJEjaW1O7r2TZat7KZwvQcfDqShwIxV4N7epHK9lbafjc4M');
     
     var colors = [ 'blue', 'red' ];
@@ -314,7 +316,11 @@ function switchTab(color) {
               },{
                   data: [],
                   backgroundColor: chartColors.green,
-                  label: 'Climb Pts'
+                  label: 'Auto Charge'
+              },{
+                  data: [],
+                  backgroundColor: chartColors.blue,
+                  label: 'Teleop Charge'
               },{
                   data: [],
                   backgroundColor: chartColors.red,
@@ -324,21 +330,21 @@ function switchTab(color) {
           var autoDataset = [{
                   data: [],
                   backgroundColor: chartColors.blue,
-                  label: 'Lower Cargo Pts'
+                  label: 'Cube Pts'
               },{
                   data: [],
                   backgroundColor: chartColors.green,
-                  label: 'Upper Cargo Pts'
+                  label: 'Cone Pts'
               }];
 
           var teleopDataset = [{
                   data: [],
                   backgroundColor: chartColors.blue,
-                  label: 'Lower Cargo Pts'
+                  label: 'Cube Pts'
               },{
                   data: [],
                   backgroundColor: chartColors.green,
-                  label: 'Upper Cargo Pts'
+                  label: 'Cone Pts'
               }];
 
           if (simulated && simulated == 'true') {
@@ -381,12 +387,13 @@ function switchTab(color) {
             var result;
             if (!(teams[team] in results)) {
               result = {
-                        'autoCargoLower': 0,
-                        'autoCargoUpper': 0,
-                        'teleopCargoLower': 0,
-                        'teleopCargoUpper': 0,
+                        'autoCube': 0,
+                        'autoCone': 0,
+                        'teleopCube': 0,
+                        'teleopCone': 0,
                         'taxi': 0,
-                        'climb': 0,
+                        'autoCharge': 0,
+                        'teleopCharge': 0,
                         'penalty': 0,
                         'opr': 0,
                         'oprp': 0
@@ -394,35 +401,70 @@ function switchTab(color) {
             } else {
                result = results[teams[team]];
             }
+          
+            var autoCubeLow = result.autoCubeLow;
+            var autoCubeMid = result.autoCubeMid;
+            var autoCubeHigh = result.autoCubeHigh;
+            var teleopCubeLow = result.teleopCubeLow;
+            var teleopCubeMid = result.teleopCubeMid;
+            var teleopCubeHigh = result.teleopCubeHigh;
+            var totalCubeLow = autoCubeLow + teleopCubeLow;
+            var totalCubeMid = autoCubeMid + teleopCubeMid;
+            var totalCubeHigh = autoCubeHigh + teleopCubeHigh;
+
+            var autoConeLow = result.autoConeLow;
+            var autoConeMid = result.autoConeMid;
+            var autoConeHigh = result.autoConeHigh;
+            var teleopConeLow = result.teleopConeLow;
+            var teleopConeMid = result.teleopConeMid;
+            var teleopConeHigh = result.teleopConeHigh;
+            var totalConeLow = autoConeLow + teleopConeLow;
+            var totalConeMid = autoConeMid + teleopConeMid;
+            var totalConeHigh = autoConeHigh + teleopConeHigh;
+
+            var autoCube = autoCubeLow + autoCubeMid + autoCubeHigh;
+            var autoCone = autoConeLow + autoConeMid + autoConeHigh;
+            var teleopCube = teleopCubeLow + teleopCubeMid + teleopCubeHigh;
+            var teleopCone = teleopConeLow + teleopConeMid + teleopConeHigh;
+
+            var totalCube = autoCube + teleopCube;
+            var totalCone = autoCone + teleopCone;
+            var total = totalCube + totalCone;
+
+            var auto = autoCone + autoCube;
+            var teleop = teleopCone + teleopCube;
+
             score += result.oprp;
             autoHtml += autoTemplateHtml.replace(/{{team}}/g, teams[team])
-                                          .replace(/{{auto_lower}}/g, result.autoCargoLower.toFixed(1))
-                                          .replace(/{{auto_upper}}/g, result.autoCargoUpper.toFixed(1))
+                                          .replace(/{{auto_cube}}/g, autoCube.toFixed(1))
+                                          .replace(/{{auto_cone}}/g, autoCone.toFixed(1))
             teleopHtml += teleopTemplateHtml.replace(/{{team}}/g, teams[team])
-                                          .replace(/{{teleop_lower}}/g, result.teleopCargoLower.toFixed(1))
-                                          .replace(/{{teleop_upper}}/g, result.teleopCargoUpper.toFixed(1))
+                                          .replace(/{{teleop_cube}}/g, teleopCube.toFixed(1))
+                                          .replace(/{{teleop_cone}}/g, teleopCone.toFixed(1))
             overallHtml += overallTemplateHtml.replace(/{{team}}/g, teams[team])
                                           .replace(/{{oprp}}/g, result.oprp.toFixed(1))
                                           .replace(/{{taxi}}/g, result.taxi.toFixed(1))
-                                          .replace(/{{climb}}/g, result.climb.toFixed(1))
+                                          .replace(/{{autoCharge}}/g, result.autoCharge.toFixed(1))
+                                          .replace(/{{teleopCharge}}/g, result.teleopCharge.toFixed(1))
                                           .replace(/{{penalty}}/g, -result.penalty.toFixed(1))
                                           .replace(/{{auto}}/g,
-                                                    (result.autoCargoLower +
-                                                     result.autoCargoUpper).toFixed(1))
+                                                    (autoCube +
+                                                     autoCone).toFixed(1))
                                           .replace(/{{teleop}}/g,
-                                                    (result.teleopCargoLower +
-                                                     result.teleopCargoUpper).toFixed(1));
+                                                    (teleopCube +
+                                                     teleopCone).toFixed(1));
             teamDataset[0].data.push(result.taxi.toFixed(1));
-            teamDataset[1].data.push((result.autoCargoLower +
-                                      result.autoCargoUpper).toFixed(1));
-            teamDataset[2].data.push((result.teleopCargoUpper +
-                                      result.teleopCargoLower).toFixed(1));
-            teamDataset[3].data.push(result.climb.toFixed(1));
-            teamDataset[4].data.push(result.penalty.toFixed(1));
-            autoDataset[0].data.push(result.autoCargoLower.toFixed(1));
-            autoDataset[1].data.push(result.autoCargoUpper.toFixed(1));
-            teleopDataset[0].data.push(result.teleopCargoLower.toFixed(1));
-            teleopDataset[1].data.push(result.teleopCargoUpper.toFixed(1));
+            teamDataset[1].data.push((autoCube +
+                                      autoCone).toFixed(1));
+            teamDataset[2].data.push((teleopCone +
+                                      teleopCube).toFixed(1));
+            teamDataset[3].data.push(result.autoCharge.toFixed(1));
+            teamDataset[4].data.push(result.teleopCharge.toFixed(1));
+            teamDataset[5].data.push(result.penalty.toFixed(1));
+            autoDataset[0].data.push(autoCube.toFixed(1));
+            autoDataset[1].data.push(autoCone.toFixed(1));
+            teleopDataset[0].data.push(teleopCube.toFixed(1));
+            teleopDataset[1].data.push(teleopCone.toFixed(1));
           }
 
           // Fill div
