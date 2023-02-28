@@ -194,13 +194,13 @@ function printPreScoutData(team, blocks, aggregate)
         "fields": [
             {
                 "type": "mrkdwn",
-                "text": `Auto
-Upper: ${aggregate.cargo_auto_upper.toFixed(2)} | Lower: ${aggregate.cargo_auto_lower.toFixed(2)}`
+                "text": `Auto Cone
+High: ${aggregate.auto_cone_high.toFixed(1)} | Mid: ${aggregate.auto_cone_mid.toFixed(1)} | Low: ${aggregate.auto_cone_low.toFixed(1)} `
             },
             {
                 "type": "mrkdwn",
-                "text": `Teleop
-Upper: ${aggregate.cargo_teleop_upper.toFixed(2)} | Lower: ${aggregate.cargo_teleop_lower.toFixed(2)}`
+                "text": `Teleop Cone
+High: ${aggregate.teleop_cone_high.toFixed(1)} | Mid: ${aggregate.teleop_cone_mid.toFixed(1)} | Low: ${aggregate.teleop_cone_low.toFixed(1)} `
             }
         ]
     });
@@ -209,7 +209,31 @@ Upper: ${aggregate.cargo_teleop_upper.toFixed(2)} | Lower: ${aggregate.cargo_tel
         "fields": [
             {
                 "type": "mrkdwn",
-                "text": 'Climb: ' + aggregate.climb.toFixed(2)
+                "text": `Auto Cube
+High: ${aggregate.auto_cube_high.toFixed(1)} | Mid: ${aggregate.auto_cube_mid.toFixed(1)} | Low: ${aggregate.auto_cube_low.toFixed(1)} `
+            },
+            {
+                "type": "mrkdwn",
+                "text": `Teleop Cube
+High: ${aggregate.teleop_cube_high.toFixed(1)} | Mid: ${aggregate.teleop_cube_mid.toFixed(1)} | Low: ${aggregate.teleop_cube_low.toFixed(1)} `
+            }
+        ]
+    });
+    blocks.push({
+        "type": "section",
+        "fields": [
+            {
+                "type": "mrkdwn",
+                "text": `Auto - Docked: ${(aggregate.auto_charge.docked * 100).toFixed(0)}% - Engaged: ${(aggregate.auto_charge.engaged * 100).toFixed(0)}%`
+            }
+        ]
+    });
+    blocks.push({
+        "type": "section",
+        "fields": [
+            {
+                "type": "mrkdwn",
+                "text": `Teleop - Docked: ${(aggregate.teleop_charge.docked * 100).toFixed(0)}% - Engaged: ${(aggregate.teleop_charge.engaged * 100).toFixed(0)}%`
             }
         ]
     });
@@ -233,11 +257,20 @@ function aggergateScoutData(team, scoutData)
 
     let aggregate = {
         matches: 0,
-        cargo_auto_upper: 0,
-        cargo_auto_lower: 0,
-        cargo_teleop_upper: 0,
-        cargo_teleop_lower: 0,
-        climb: 0,
+        auto_cone_high: 0,
+        auto_cone_mid: 0,
+        auto_cone_low: 0,
+        auto_cube_high: 0,
+        auto_cube_mid: 0,
+        auto_cube_low: 0,
+        teleop_cone_high: 0,
+        teleop_cone_mid: 0,
+        teleop_cone_low: 0,
+        teleop_cube_high: 0,
+        teleop_cube_mid: 0,
+        teleop_cube_low: 0,
+        auto_charge: {mobility: 0, docked: 0, engaged: 0},
+        teleop_charge: {parked: 0, docked: 0, engaged: 0},
         last_comment: ''
     };
     if (!(team in scoutData))
@@ -245,18 +278,53 @@ function aggergateScoutData(team, scoutData)
 
     for (const row of scoutData[team]) {
         aggregate.matches++;
-        aggregate.cargo_auto_upper += parseFloat(row.cargo_auto_upper_made);
-        aggregate.cargo_auto_lower += parseFloat(row.cargo_auto_lower_made);
-        aggregate.cargo_teleop_upper += parseFloat(row.teleop_upper);
-        aggregate.cargo_teleop_lower += parseFloat(row.teleop_lower);
-        aggregate.climb += row.climb == 'Traversal' ? 4.0 : (row.climb == 'High Rung' ? 3.0 : (row.climb == 'Mid Rung' ? 2.0 : (row.climb == 'Low Rung' ? 1.0 : 0.0)));
-        aggregate.last_comment = row.impression;
+        aggregate.auto_cone_high += parseFloat(row.auto_cone_high);
+        aggregate.auto_cone_mid += parseFloat(row.auto_cone_mid);
+        aggregate.auto_cone_low += parseFloat(row.auto_cone_low);
+        aggregate.auto_cube_high += parseFloat(row.auto_cube_high);
+        aggregate.auto_cube_mid += parseFloat(row.auto_cube_mid);
+        aggregate.auto_cube_low += parseFloat(row.auto_cube_low);
+        aggregate.teleop_cone_high += parseFloat(row.teleop_cone_high);
+        aggregate.teleop_cone_mid += parseFloat(row.teleop_cone_mid);
+        aggregate.teleop_cone_low += parseFloat(row.teleop_cone_low);
+        aggregate.teleop_cube_high += parseFloat(row.teleop_cube_high);
+        aggregate.teleop_cube_mid += parseFloat(row.teleop_cube_mid);
+        aggregate.teleop_cube_low += parseFloat(row.teleop_cube_low);
+
+        if (row.auto_charge) {
+            if (row.auto_charge.includes('Mobility')) aggregate.auto_charge.mobility++;
+            if (row.auto_charge.includes('Docked')) aggregate.auto_charge.docked++;
+            if (row.auto_charge.includes('Engaged')) aggregate.auto_charge.engaged++;
+        }
+        if (row.teleop_charge) {
+            if (row.teleop_charge.includes('Parked')) aggregate.teleop_charge.parked++;
+            if (row.teleop_charge.includes('Docked')) aggregate.teleop_charge.docked++;
+            if (row.teleop_charge.includes('Engaged')) aggregate.teleop_charge.engaged++;
+        }
+        aggregate.last_comment = row.comment;
     }
-    aggregate.cargo_auto_upper = aggregate.cargo_auto_upper / aggregate.matches;
-    aggregate.cargo_auto_lower = aggregate.cargo_auto_lower / aggregate.matches;
-    aggregate.cargo_teleop_upper = aggregate.cargo_teleop_upper / aggregate.matches;
-    aggregate.cargo_teleop_lower = aggregate.cargo_teleop_lower / aggregate.matches;
-    aggregate.climb = (aggregate.climb / aggregate.matches) * (15.0 / 4.0);
+
+    if (aggregate.matches < 1)
+        return aggregate;
+
+    aggregate.auto_cone_high /= aggregate.matches;
+    aggregate.auto_cone_mid /= aggregate.matches;
+    aggregate.auto_cone_low /= aggregate.matches;
+    aggregate.auto_cube_high /= aggregate.matches;
+    aggregate.auto_cube_mid /= aggregate.matches;
+    aggregate.auto_cube_low /= aggregate.matches;
+    aggregate.teleop_cone_high /= aggregate.matches;
+    aggregate.teleop_cone_mid /= aggregate.matches;
+    aggregate.teleop_cone_low /= aggregate.matches;
+    aggregate.teleop_cube_high /= aggregate.matches;
+    aggregate.teleop_cube_mid /= aggregate.matches;
+    aggregate.teleop_cube_low /= aggregate.matches;    
+    aggregate.auto_charge.mobility /= aggregate.matches;
+    aggregate.auto_charge.docked /= aggregate.matches;
+    aggregate.auto_charge.engaged /= aggregate.matches;
+    aggregate.teleop_charge.parked /= aggregate.matches;
+    aggregate.teleop_charge.docked /= aggregate.matches;
+    aggregate.teleop_charge.engaged /= aggregate.matches;
 
     return aggregate;
 }
@@ -296,7 +364,7 @@ async function tba_matchCallback(payload)
 
 async function getTeamName(number, response)
 {
-    const sheet = doc.sheetsByTitle['Austin Team List'];
+    const sheet = doc.sheetsByTitle['Quick Look'];
     await sheet.loadCells('A:B');
 
     let row = 1;
@@ -310,37 +378,47 @@ async function getTeamName(number, response)
     response.send('N/A');
 }
 
+function colToNum(col) {
+    if (col.length > 1) return col.substring(1).charCodeAt(0) - 65 +26;
+    return col.charCodeAt(0) - 65;
+}
+
 async function getRawData(callback)
 {
     const sheet = doc.sheetsByTitle['RAW Scouting Data'];
-    await sheet.loadCells('A:AM');
+    await sheet.loadCells('A:AC');
 
     let mapping = {
-        team: 2,
-        matchNum: 3,
-        auto_behavior: 4,
-        cargo_auto_upper_made: 5,
-        cargo_auto_upper_attempt: 6,
-        cargo_auto_lower_made: 7,
-        cargo_auto_lower_attempt: 8,
-        perf_intake: 21,
-        perf_scoring: 22,
-        perf_defense: 23,
-        perf_drive: 29,
-        teleop_upper: 24,
-        teleop_lower: 25,
-        climb: 28,
-        impression: 30,
-        comment: 31
+        team: 'B',
+        matchNum: 'A',
+        auto_charge: 'H',
+        auto_cone_high: 'I',
+        auto_cone_mid: 'J',
+        auto_cone_low: 'K',
+        auto_cube_high: 'L',
+        auto_cube_mid: 'M',
+        auto_cube_low: 'N',
+        teleop_cone_high: 'O',
+        teleop_cone_mid: 'P',
+        teleop_cone_low: 'Q',
+        teleop_cube_high: 'R',
+        teleop_cube_mid: 'S',
+        teleop_cube_low: 'T',
+        teleop_charge: 'U',
+        perf_scoring: 'E',
+        perf_defense: 'D',
+        perf_drive: 'F',
+        comment: 'W'
     }
 
     let row = 1;
     let results = {};
     while (sheet.getCell(row,0).value) {
-
         let result = {};
         for (const [key, value] of Object.entries(mapping)) {
-            result[key] = sheet.getCell(row, value).value;
+            let defaultVal = 0;
+            if (key == 'auto_charge' || key == 'teleop_charge' || key == 'comment') defaultVal = '';
+            result[key] = sheet.getCell(row, colToNum(value)).value ? sheet.getCell(row, colToNum(value)).value : defaultVal;
         }
         result.matchKey = result.matchNum;
         row++;
