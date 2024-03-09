@@ -9,95 +9,25 @@
 </head>
 <body>
     <div class="w3-cell">
-        <div class="w3-row">
 
-            <!-- Top left panel -->
-            <div class="w3-cell w3-quarter">
-                <img class="w3-image" src="assets/img/6800.jpg">
-            </div>
-
-            <!-- Top right panel -->
-            <div class="w3-cell w3-threequarter">
-                <div class="w3-row w3-black w3-center">
-                    <h3><span id="teamName"></span></h3>
-                </div>
-
-                <!-- Match schedule -->
-                <div class="w3-row">
-                    <div class="w3-cell w3-half">
-                        <div class="w3-row w3-center">
-                            Last Match: <span id="last_match">QM8</span>
-                        </div>
-                        <div class="w3-row w3-center">
-                            <div class="w3-card">
-                                <div class="w3-cell w3-half w3-red">
-                                    <div id="last_match_red_1">6800</div>
-                                    <div id="last_match_red_2">27</div>
-                                    <div id="last_match_red_3">217</div>
-                                </div>
-                                <div class="w3-cell w3-half w3-blue">
-                                    <div id="last_match_blue_1">67</div>
-                                    <div id="last_match_blue_2">469</div>
-                                    <div id="last_match_blue_3">1114</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="w3-cell w3-half">
-                        <div class="w3-row w3-center">
-                            Next Match: <span id="next_match">QM17</span>
-                        </div>
-                        <div class="w3-row w3-center">
-                            <div class="w3-card">
-                                <div class="w3-cell w3-half w3-red">
-                                    <div id="next_match_red_1">51</div>
-                                    <div id="next_match_red_2">47</div>
-                                    <div id="next_match_red_3">1</div>
-                                </div>
-                                <div class="w3-cell w3-half w3-blue">
-                                    <div id="next_match_blue_1">68</div>
-                                    <div id="next_match_blue_2">6800</div>
-                                    <div id="next_match_blue_3">494</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <h3 id="total_errors">Total Errors: Calculating</h3>
 
         <!-- Bottom panel -->
         <div class="w3-row">
             <div class="w3-bar w3-black">
-                <button class="w3-bar-item w3-button w3-grey" onclick="openTab(this, 'tab_match_history')">Match History</button>
-                <button class="w3-bar-item w3-button" onclick="openTab(this, 'tab_comments')">Comments</button>
-                <button class="w3-bar-item w3-button" onclick="openTab(this, 'tab_performance')">Performance</button>
+                <button class="w3-bar-item w3-button w3-grey" onclick="openTab(this, 'tab_match_errors')">Match Errors</button>
+                <button class="w3-bar-item w3-button" onclick="openTab(this, 'tab_student_errors')">Student Errors</button>
             </div>
 
-            <div id="tab_match_history" class="tab">
+            <div id="tab_match_errors" class="tab">
                 <div class="w3-responsive">
-                    <table class="w3-table w3-striped w3-hoverable w3-small" id="table_match_history"></table>
+                    <table class="w3-table w3-striped w3-hoverable w3-small" id="table_match_errors"></table>
                 </div>
             </div>
 
-            <div id="tab_comments" class="tab" style="display:none">
+            <div id="tab_student_errors" class="tab">
                 <div class="w3-responsive">
-                    <table class="w3-table w3-striped w3-hoverable w3-small" id="table_comments"></table>
-                </div>
-            </div>
-
-            <div id="tab_performance" class="tab" style="display:none">
-                <div class="w3-cell w3-quarter">
-                    <canvas id="chart_intake" class="w3-image"></canvas>
-                </div>
-                <div class="w3-cell w3-quarter">
-                    <canvas id="chart_scoring" class="w3-image"></canvas>
-                </div>
-                <div class="w3-cell w3-quarter">
-                    <canvas id="chart_defense" class="w3-image"></canvas>
-                </div>
-                <div class="w3-cell w3-quarter">
-                    <canvas id="chart_driving" class="w3-image"></canvas>
+                    <table class="w3-table w3-striped w3-hoverable w3-small" id="table_student_errors"></table>
                 </div>
             </div>
         </div>
@@ -107,225 +37,180 @@
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-<script id="header-match-history" type="text/template">
+
+<script id="header-match-errors" type="text/template">
     <thead class="w3-grey">
-        <td>Match</td>
-        <td>Start Pos.</td>
-        <td>Auto Behave.</td>
-        <td>Auto Upper Attempt</td>
-        <td>Auto Upper Made</td>
-        <td>Auto Lower Attempt</td>
-        <td>Auto Lower Made</td>
-        <td>Teleop Upper</td>
-        <td>Teleop Lower</td>
-        <td>Climb</td>
+        <td onclick="sortTable(0, 0)">Match</td>
+        <td onclick="sortTable(1, 0)">Total</td>
+        <td>Mobility</td>
+        <td>Auto Speaker</td>
+        <td>Auto Amp</td>
+        <td>Teleop Speaker</td>
+        <td>Teleop Amp</td>
+        <td>End Game</td>
+        <td>Co-op</td>
     </thead>
 </script>
 
-<script id="template-match-history" type="text/template">
+<script id="header-student-errors" type="text/template">
+    <thead class="w3-grey">
+        <td>Student</td>
+        <td onclick="sortTable(1, 1)">Avg</td>
+        <td onclick="sortTable(2, 1)">Matches</td>
+        <td onclick="sortTable(3, 1)">Total</td>
+        <td>Mobility</td>
+        <td>Auto Speaker</td>
+        <td>Auto Amp</td>
+        <td>Teleop Speaker</td>
+        <td>Teleop Amp</td>
+        <td>End Game</td>
+        <td>Co-op</td>
+    </thead>
+</script>
+
+<script id="template-match-errors" type="text/template">
     <tr>
         <td>{{matchNum}}</td>
-        <td>{{start_pos}}</td>
-        <td>{{auto_behavior}}</td>
-        <td>{{cargo_auto_upper_attempt}}</td>
-        <td>{{cargo_auto_upper_made}}</td>
-        <td>{{cargo_auto_lower_attempt}}</td>
-        <td>{{cargo_auto_lower_made}}</td>
-        <td>{{teleop_upper}}</td>
-        <td>{{teleop_lower}}</td>
-        <td>{{climb}}</td>
+        <td>{{total}}</td>
+        <td>{{mobility}}</td>
+        <td>{{autoSpeaker}}</td>
+        <td>{{autoAmp}}</td>
+        <td>{{teleopSpeaker}}</td>
+        <td>{{teleopAmp}}</td>
+        <td>{{endGame}}</td>
+        <td>{{coop}}</td>
     </tr>
 </script>
 
-<script id="header-comments" type="text/template">
-    <thead class="w3-grey">
-        <td>Match</td>
-        <td>Comments</td>
-    </thead>
-</script>
-
-<script id="template-comments" type="text/template">
+<script id="template-student-errors" type="text/template">
     <tr>
-        <td>{{matchNum}}</td>
-        <td>{{impression}}</td>
+        <td>{{student}}</td>
+        <td>{{avg}}</td>
+        <td>{{matches}}</td>
+        <td>{{total}}</td>
+        <td>{{mobility}}</td>
+        <td>{{autoSpeaker}}</td>
+        <td>{{autoAmp}}</td>
+        <td>{{teleopSpeaker}}</td>
+        <td>{{teleopAmp}}</td>
+        <td>{{endGame}}</td>
+        <td>{{coop}}</td>
     </tr>
 </script>
 
 <script>
-
-    var url = new URL(window.location.href);
-    var team = url.searchParams.get("team");
-
-    function populateMatchHistory(data)
-    {
-        var MatchHistoryHeader = document.getElementById("header-match-history");
-        var MatchHistoryTemplate = document.getElementById("template-match-history");
-        var MatchHistoryHeaderHTML = MatchHistoryHeader.innerHTML;
-        var MatchHistoryTemplateHTML = MatchHistoryTemplate.innerHTML;
-
-        if (data && data[team]) {
-            var listHtml = MatchHistoryHeaderHTML;
-
-            for (var match in data[team]) {
-                listHtml += MatchHistoryTemplateHTML.replace(/{{matchNum}}/g, data[team][match].matchNum)
-                                      .replace(/{{start_pos}}/g, data[team][match].start_pos)
-                                      .replace(/{{auto_behavior}}/g, data[team][match].auto_behavior)
-                                      .replace(/{{cargo_auto_upper_attempt}}/g, data[team][match].cargo_auto_upper_attempt)
-                                      .replace(/{{cargo_auto_upper_made}}/g, data[team][match].cargo_auto_upper_made)
-                                      .replace(/{{cargo_auto_lower_attempt}}/g, data[team][match].cargo_auto_lower_attempt)
-                                      .replace(/{{cargo_auto_lower_made}}/g, data[team][match].cargo_auto_lower_made)
-                                      .replace(/{{teleop_upper}}/g, data[team][match].teleop_upper)
-                                      .replace(/{{teleop_lower}}/g, data[team][match].teleop_lower)
-                                      .replace(/{{climb}}/g, data[team][match].climb)
+    function sortTable(n, tid_mray, specialDir=null) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById(tid_mray == 0 ? "table_match_errors" : "table_student_errors");
+        switching = true;
+        dir = "asc";
+        if (specialDir != null) {
+            dir = specialDir
+        }
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+            shouldSwitch = false;
+            x = rows[i].getElementsByTagName("TD")[n];
+            y = rows[i + 1].getElementsByTagName("TD")[n];
+            if (dir == "asc") {
+                if (parseFloat(x.innerHTML.toLowerCase()) > parseFloat(y.innerHTML.toLowerCase())) {
+                shouldSwitch = true;
+                break;
+                }
+            } else if (dir == "desc") {
+                if (parseFloat(x.innerHTML.toLowerCase()) < parseFloat(y.innerHTML.toLowerCase())) {
+                shouldSwitch = true;
+                break;
+                }
             }
-
-            document.getElementById("table_match_history").innerHTML = listHtml;
+            }
+            if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            switchcount ++;
+            } else {
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+            }
         }
     }
 
-    function populateComments(data)
+    function populateMatchErrors(data)
     {
-        var CommentHeader = document.getElementById("header-comments");
-        var CommentTemplate = document.getElementById("template-comments");
-        var CommentHeaderHTML = CommentHeader.innerHTML;
-        var CommentTemplateHTML = CommentTemplate.innerHTML;
+        var MatchErrorsHeader = document.getElementById("header-match-errors");
+        var MatchErrorsTemplate = document.getElementById("template-match-errors");
+        var MatchErrorsHeaderHTML = MatchErrorsHeader.innerHTML;
+        var MatchErrorsTemplateHTML = MatchErrorsTemplate.innerHTML;
 
-        if (data && data[team]) {
-            var listHtml = CommentHeaderHTML;
+        if (data) {
+            var listHtml = MatchErrorsHeaderHTML;
 
-            for (var match in data[team]) {
-                listHtml += CommentTemplateHTML.replace(/{{matchNum}}/g, data[team][match].matchNum)
-                                      .replace(/{{impression}}/g, data[team][match].impression)
+            let matchTotal = 0;
+			for (const [match, allianceData] of Object.entries(data)) {
+                const total = allianceData.red.mobility + allianceData.blue.mobility +
+                                        allianceData.red.autoSpeaker + allianceData.blue.autoSpeaker +
+                                        allianceData.red.autoAmp + allianceData.blue.autoAmp +
+                                        allianceData.red.teleopSpeaker + allianceData.blue.teleopSpeaker +
+                                        allianceData.red.teleopAmp + allianceData.blue.teleopAmp +
+                                        allianceData.red.endGame + allianceData.blue.endGame +
+                                        allianceData.red.coop + allianceData.blue.coop;
+                matchTotal += total;
+                listHtml += MatchErrorsTemplateHTML.replace(/{{matchNum}}/g, match)
+                                      .replace(/{{mobility}}/g, allianceData.red.mobility + allianceData.blue.mobility)
+                                      .replace(/{{autoSpeaker}}/g, allianceData.red.autoSpeaker + allianceData.blue.autoSpeaker)
+                                      .replace(/{{autoAmp}}/g, allianceData.red.autoAmp + allianceData.blue.autoAmp)
+                                      .replace(/{{teleopSpeaker}}/g, allianceData.red.teleopSpeaker + allianceData.blue.teleopSpeaker)
+                                      .replace(/{{teleopAmp}}/g, allianceData.red.teleopAmp + allianceData.blue.teleopAmp)
+                                      .replace(/{{endGame}}/g, allianceData.red.endGame + allianceData.blue.endGame)
+                                      .replace(/{{coop}}/g, allianceData.red.coop + allianceData.blue.coop)
+                                      .replace(/{{total}}/g, total)
             }
 
-            document.getElementById("table_comments").innerHTML = listHtml;
+            document.getElementById("table_match_errors").innerHTML = listHtml;
+            document.getElementById("total_errors").innerHTML = "Total Errors: " + matchTotal;
+            sortTable(1, 0, "desc");
         }
     }
 
-    function populatePerformance(data)
+    function populateStudentErrors(data)
     {
+        var StudentErrorsHeader = document.getElementById("header-student-errors");
+        var StudentErrorsTemplate = document.getElementById("template-student-errors");
+        var StudentErrorsHeaderHTML = StudentErrorsHeader.innerHTML;
+        var StudentErrorsTemplateHTML = StudentErrorsTemplate.innerHTML;
 
-        let default_labels = [1, 2, 3, 4, 5];
-        let payload = {
-            intake: [0, 0, 0, 0, 0],
-            scoring: [0, 0, 0, 0, 0],
-            defense: [0, 0, 0, 0, 0],
-            driving: [0, 0, 0, 0, 0]
-        };
-        if (data && data[team]) {
-            for (var match in data[team]) {
-                if (data[team][match].perf_scoring && data[team][match].perf_scoring >= 1 && data[team][match].perf_scoring <= 5) {
-                    payload.scoring[data[team][match].perf_scoring - 1]++;
-                }
-                if (data[team][match].perf_defense && data[team][match].perf_defense >= 1 && data[team][match].perf_defense <= 5) {
-                    payload.defense[data[team][match].perf_defense - 1]++;
-                }
-                if (data[team][match].perf_intake && data[team][match].perf_intake >= 1 && data[team][match].perf_intake <= 5) {
-                    payload.intake[data[team][match].perf_intake - 1]++;
-                }
-                if (data[team][match].perf_drive && data[team][match].perf_drive >= 1 && data[team][match].perf_drive <= 5) {
-                    payload.driving[data[team][match].perf_drive - 1]++;
+        if (data) {
+            var listHtml = StudentErrorsHeaderHTML;
+
+			for (const [student, studentData] of Object.entries(data)) {
+                if (studentData.matches >= 10) {
+                    listHtml += StudentErrorsTemplateHTML.replace(/{{student}}/g, student)
+                                        .replace(/{{matches}}/g, studentData.matches)
+                                        .replace(/{{mobility}}/g, studentData.mobility*3)
+                                        .replace(/{{autoSpeaker}}/g, studentData.autoSpeaker)
+                                        .replace(/{{autoAmp}}/g, studentData.autoAmp)
+                                        .replace(/{{teleopSpeaker}}/g, studentData.teleopSpeaker)
+                                        .replace(/{{teleopAmp}}/g, studentData.teleopAmp)
+                                        .replace(/{{endGame}}/g, studentData.endGame*3)
+                                        .replace(/{{coop}}/g, studentData.coop*5)
+                                        .replace(/{{total}}/g, studentData.total)
+                                        .replace(/{{avg}}/g, (studentData.avg).toFixed(1))
                 }
             }
+            document.getElementById("table_student_errors").innerHTML = listHtml;
+            sortTable(1, 1)
         }
-
-        const chart_intake_ctx = document.getElementById('chart_intake').getContext('2d');
-        const chart_intake = new Chart(chart_intake_ctx, {
-            type: 'bar',
-            data: {
-                labels: default_labels,
-                datasets: [{
-                    label: 'Intake Performance',
-                    data: payload.intake,
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)'
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMin: 0,
-                        suggestedMax: 12
-                    }
-                }
-            }
-        });
-        const chart_scoring_ctx = document.getElementById('chart_scoring').getContext('2d');
-        const chart_scoring = new Chart(chart_scoring_ctx, {
-            type: 'bar',
-            data: {
-                labels: default_labels,
-                datasets: [{
-                    label: 'Scoring Performance',
-                    data: payload.scoring,
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)'
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMin: 0,
-                        suggestedMax: 12
-                    }
-                }
-            }
-        });
-        const chart_defense_ctx = document.getElementById('chart_defense').getContext('2d');
-        const chart_defense = new Chart(chart_defense_ctx, {
-            type: 'bar',
-            data: {
-                labels: default_labels,
-                datasets: [{
-                    label: 'Defense Performance',
-                    data: payload.defense,
-                    backgroundColor: 'rgba(255, 206, 86, 0.6)'
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMin: 0,
-                        suggestedMax: 12
-                    }
-                }
-            }
-        });
-        const chart_driving_ctx = document.getElementById('chart_driving').getContext('2d');
-        const chart_driving = new Chart(chart_driving_ctx, {
-            type: 'bar',
-            data: {
-                labels: default_labels,
-                datasets: [{
-                    label: 'Driving Performance',
-                    data: payload.driving,
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)'
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMin: 0,
-                        suggestedMax: 12
-                    }
-                }
-            }
-        });
     }
 
     function populateData(data)
     {
         data = JSON.parse(data);
-        populateMatchHistory(data);
-        populateComments(data);
-        populatePerformance(data);
-    }
-
-    function populateTeamName(name)
-    {
-        document.getElementById("teamName").innerHTML = team + ' - ' + name;
+        populateMatchErrors(data.matchErrors)
+        populateStudentErrors(data.studentErrors)
     }
 
     function httpGetAsync(theUrl, callback)
@@ -352,8 +237,7 @@
         document.getElementById(tabName).style.display = "block";
     }
 
-    httpGetAsync('event?eventCode=2022txdri', populateData);
-    httpGetAsync('team?number=' + team, populateTeamName);
+    httpGetAsync('errors', populateData);
 
 </script>
 

@@ -5,9 +5,9 @@ var TBA_Generator = require('./src/tba_generator.js');
 var gen = new TBA_Generator();
 
 // Year + 4 digit event code
-// var eventCode = "2019miket";
+var eventCode = "2024txwac";
 // Team codes have "frc" in front of the number
-// var teamCode = "frc27";
+var teamCode = "frc27";
 
 /*
 // Team Information
@@ -78,6 +78,12 @@ tba.getNextMatch(eventCode, function(last_match) {
 //     }
 // })
 
-tba.genOPRs('2022week0', function(oprs) {
-	// console.log(oprs);
-}, true);
+// tba.genOPRs('2022week0', function(oprs) {
+// 	// console.log(oprs);
+// }, true);
+
+
+// Get a match list for an event
+tba.getMatches(eventCode, function(matches) {
+    console.log(matches);
+});
